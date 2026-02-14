@@ -4,19 +4,27 @@ import React, { useState } from 'react';
 import { fetchApi } from '@/lib/fetcher';
 import type { PohonKinerja, PohonIndikator } from '@/types/pohon';
 import { getHeaderStyle } from '../../_utils';
+import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 
 interface FormEditNodeProps {
   node: PohonKinerja;
   onCancel: () => void;
-  onSuccess: () => void;
+  onSuccess: (updatedNode: PohonKinerja) => void;
 }
 
 function getTahunFromCookie(): string {
   try {
     const raw = Cookies.get('tahun');
-    if (raw) return JSON.parse(raw).value || '';
-  } catch { /* ignore */ }
+    if (!raw) return String(new Date().getFullYear());
+    const parsed = JSON.parse(raw);
+    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
+  } catch {
+    // Cookie bukan JSON, pakai langsung sebagai string
+    const raw = Cookies.get('tahun');
+    if (raw && /^\d{4}$/.test(raw)) return raw;
+    toast.error('Format cookie tahun tidak valid');
+  }
   return String(new Date().getFullYear());
 }
 
@@ -24,7 +32,7 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    tema: node.tema,
+    nama_pohon: node.nama_pohon,
     keterangan: node.keterangan || '',
   });
 
@@ -87,7 +95,7 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
 
     const payload = {
       parent: node.parent || null,
-      tema: formData.tema,
+      nama_pohon: formData.nama_pohon,
       keterangan: formData.keterangan,
       tahun,
       jenis_pohon: node.jenis_pohon,
@@ -97,23 +105,43 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
     };
 
     try {
-      await fetchApi(`/pohon-kinerja/${node.id}`, {
+      const res = await fetchApi<{ data: { id: number; nama_pohon?: string; tema?: string; keterangan: string; jenis_pohon: string; level_pohon: number; is_active: boolean; jumlah_review: number; tagging: string | null } }>(`/pohon_kinerja_admin/update/${node.id}`, {
         method: 'PUT',
         body: JSON.stringify(payload),
       });
-      alert('Data berhasil diperbarui');
-      onSuccess();
+      toast.success('Data berhasil diperbarui');
+      onSuccess({
+        ...node,
+        nama_pohon: res.data.nama_pohon ?? res.data.tema ?? node.nama_pohon,
+        keterangan: res.data.keterangan,
+        jenis_pohon: res.data.jenis_pohon,
+        level_pohon: res.data.level_pohon,
+        is_active: res.data.is_active,
+        jumlah_review: res.data.jumlah_review,
+        tagging: res.data.tagging,
+        indikator: indikators.map((ind) => ({
+          id_indikator: ind.id_indikator || '',
+          id_pokin: String(node.id),
+          nama_indikator: ind.nama_indikator,
+          targets: [{
+            id_target: ind.id_target || '',
+            indikator_id: ind.id_indikator || '',
+            target: ind.target,
+            satuan: ind.satuan,
+          }],
+        })),
+      });
     } catch (error: unknown) {
-      console.error('Update error:', error);
-      const errMsg = error instanceof Error ? error.message : 'Gagal memperbarui data';
-      alert(errMsg);
+      const code = (error as Error & { code?: number }).code;
+      const message = error instanceof Error ? error.message : 'Gagal memperbarui data';
+      toast.error(`${message}${code ? ` (${code})` : ''}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-card border-2 border-border rounded-lg p-4 shadow-xl max-w-sm w-full relative text-left">
+    <div className="bg-card border-2 border-border rounded-lg p-4 shadow-xl min-w-[320px] max-w-sm w-full relative text-left">
       <div
         className={`flex flex-col rounded-lg shadow-sm mb-4 border p-3 ${getHeaderStyle(node.jenis_pohon)}`}
       >
@@ -124,11 +152,11 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-xs">
         <div>
-          <label className="font-bold text-muted-foreground block mb-1">Nama {node.jenis_pohon}</label>
+          <label className="font-bold text-foreground block mb-1">Nama {node.jenis_pohon}</label>
           <input
             type="text"
-            name="tema"
-            value={formData.tema}
+            name="nama_pohon"
+            value={formData.nama_pohon}
             onChange={handleChange}
             className="w-full border border-input rounded p-2 focus:ring-2 focus:ring-ring outline-none"
             placeholder="Masukkan nama..."
@@ -136,43 +164,44 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
           />
         </div>
 
-        <div className="border border-form-highlight-border rounded p-2 bg-form-highlight-bg/50">
-          <label className="font-bold text-form-highlight-text block mb-2 text-center border-b border-form-highlight-border pb-1">
+        <div className="border border-foreground/40 rounded p-2 bg-form-highlight-bg/50">
+          <label className="font-bold text-foreground block mb-2 text-center border-b border-form-highlight-border pb-1">
             INDIKATOR
           </label>
 
           {indikators.map((ind, idx) => (
-            <div key={idx} className="mb-4 border-b border-border pb-2 last:border-0 last:pb-0">
+            <div key={idx} className="mb-4 border-b border-border pb-2 last:border-0 last:pb-0 ">
               <div className="mb-2">
-                <label className="text-[10px] font-semibold text-muted-foreground">
+                <label className="text-[10px] font-semibold text-black">
                   Nama Indikator {idx + 1}
                 </label>
                 <input
                   type="text"
                   value={ind.nama_indikator}
                   onChange={(e) => handleIndikatorChange(idx, 'nama_indikator', e.target.value)}
-                  className="w-full border border-input rounded p-1.5 focus:border-ring outline-none"
+                  className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
                   placeholder="Contoh: Meningkatnya..."
                 />
               </div>
               <div className="flex gap-2">
                 <div className="w-1/3">
-                  <label className="text-[10px] font-semibold text-muted-foreground">Target</label>
+                  <label className="text-[10px] font-semibold text-black">Target</label>
                   <input
                     type="text"
                     value={ind.target}
                     onChange={(e) => handleIndikatorChange(idx, 'target', e.target.value)}
-                    className="w-full border border-input rounded p-1.5 focus:border-ring outline-none"
+                    className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
+                    placeholder="Contoh: 100"
                   />
                 </div>
                 <div className="w-2/3">
-                  <label className="text-[10px] font-semibold text-muted-foreground">Satuan</label>
+                  <label className="text-[10px] font-semibold text-black">Satuan</label>
                   <input
                     type="text"
                     value={ind.satuan}
                     onChange={(e) => handleIndikatorChange(idx, 'satuan', e.target.value)}
-                    className="w-full border border-input rounded p-1.5 focus:border-ring outline-none"
-                    placeholder="Contoh: Persen/Dokumen"
+                    className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
+                    placeholder="Contoh: Persen/Unit"
                   />
                 </div>
               </div>
@@ -189,14 +218,14 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
           <button
             type="button"
             onClick={addIndikator}
-            className="w-full mt-2 border border-dashed border-form-highlight-border text-form-highlight-text rounded p-1 hover:bg-form-highlight-bg transition"
+            className="w-full mt-2 border border-dashed border-foreground/40 text-foreground rounded p-1 bg-white hover:bg-foreground/5 transition"
           >
             + Tambah Indikator
           </button>
         </div>
 
         <div>
-          <label className="font-bold text-muted-foreground block mb-1">Keterangan</label>
+          <label className="font-bold text-foreground block mb-1">Keterangan</label>
           <textarea
             name="keterangan"
             value={formData.keterangan}
@@ -212,14 +241,14 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 bg-destructive hover:bg-destructive/90 text-white py-2 rounded font-bold transition disabled:opacity-50"
+            className="flex-1 bg-destructive/90 hover:bg-destructive text-white py-2 rounded font-bold transition disabled:opacity-50"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2 rounded font-bold transition disabled:opacity-50 flex justify-center items-center gap-2"
+            className="flex-1 bg-[#3072D6]/90 hover:bg-[#3072D6] text-white py-2 rounded font-bold transition disabled:opacity-50 flex justify-center items-center gap-2"
           >
             {loading ? 'Menyimpan...' : 'Simpan'}
           </button>

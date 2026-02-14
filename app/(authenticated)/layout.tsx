@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/sonner';
 import Cookies from 'js-cookie';
 
 export default function AuthenticatedLayout({
@@ -36,6 +37,7 @@ export default function AuthenticatedLayout({
         </div>
         {children}
       </main>
+      <Toaster />
     </SidebarProvider>
   );
 }

@@ -37,18 +37,17 @@ export function getPohonStyle(levelPohon: number) {
 }
 
 export function getHeaderStyle(jenisPohon: string) {
-  const jp = jenisPohon.toUpperCase().replace(/\s+/g, '_');
-  switch (jp) {
-    case 'STRATEGIC_PEMDA':
+  switch (jenisPohon) {
+    case 'Strategic Pemda':
       return 'border-pohon-strategic-border text-white bg-gradient-to-r from-pohon-strategic-from from-40% to-pohon-strategic-to';
-    case 'TACTICAL_PEMDA':
+    case 'Tactical Pemda':
       return 'border-pohon-tactical-border text-white bg-gradient-to-r from-pohon-tactical-from from-40% to-pohon-tactical-to';
-    case 'OPERATIONAL_PEMDA':
+    case 'Operational Pemda':
       return 'border-pohon-operational-border text-white bg-gradient-to-r from-pohon-operational-from from-40% to-pohon-operational-to';
-    case 'TEMATIK':
-    case 'SUB_TEMATIK':
-    case 'SUB_SUB_TEMATIK':
-    case 'SUPER_SUB_TEMATIK':
+    case 'Tematik':
+    case 'Sub Tematik':
+    case 'Sub Sub Tematik':
+    case 'Super Sub Tematik':
       return 'border-pohon-tematik-border bg-pohon-tematik-bg text-pohon-tematik-text';
     default:
       return 'border-border bg-card text-card-foreground';

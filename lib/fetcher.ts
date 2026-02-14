@@ -20,7 +20,9 @@ export async function fetchApi<T = unknown>(
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.message || `Request failed (${res.status})`);
+    const err = new Error(data.message || 'Request failed');
+    (err as Error & { code: number }).code = res.status;
+    throw err;
   }
 
   return data;

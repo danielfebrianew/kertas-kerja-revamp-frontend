@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { fetchApi } from '@/lib/fetcher';
 import type { ChildInfo } from '../../_utils';
 import { getHeaderStyle } from '../../_utils';
+import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 
 interface FormAddChildModalProps {
@@ -16,8 +17,15 @@ interface FormAddChildModalProps {
 function getTahunFromCookie(): string {
   try {
     const raw = Cookies.get('tahun');
-    if (raw) return JSON.parse(raw).value || '';
-  } catch { /* ignore */ }
+    if (!raw) return String(new Date().getFullYear());
+    const parsed = JSON.parse(raw);
+    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
+  } catch {
+    // Cookie bukan JSON, pakai langsung sebagai string
+    const raw = Cookies.get('tahun');
+    if (raw && /^\d{4}$/.test(raw)) return raw;
+    toast.error('Format cookie tahun tidak valid');
+  }
   return String(new Date().getFullYear());
 }
 
@@ -75,7 +83,7 @@ export const FormAddChildModal: React.FC<FormAddChildModalProps> = ({
 
     const payload = {
       parentId,
-      namaPohon,
+      nama_pohon: namaPohon,
       keterangan: keteranganPohon,
       tahun,
       jenisPohon: childInfo.nextJenis,
@@ -100,135 +108,132 @@ export const FormAddChildModal: React.FC<FormAddChildModalProps> = ({
       });
       onSuccess();
     } catch (error) {
-      console.error(error);
-      alert('Terjadi kesalahan saat menyimpan');
+      const code = (error as Error & { code?: number }).code;
+      const message = error instanceof Error ? error.message : 'Terjadi kesalahan';
+      toast.error(`${message}${code ? ` (${code})` : ''}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col rounded-lg shadow-xl border border-border bg-card max-w-sm w-87.5 relative text-left">
+    <div className="bg-card border-2 border-border rounded-lg p-4 shadow-xl min-w-[320px] max-w-sm w-full relative text-left">
       <div
-        className={`flex flex-col rounded-lg shadow-sm mb-2 border p-3 mx-2 mt-2 ${getHeaderStyle(childInfo.nextJenis)}`}
+        className={`flex flex-col rounded-lg shadow-sm mb-4 border p-3 ${getHeaderStyle(childInfo.nextJenis)}`}
       >
         <span className="text-xs text-center font-bold uppercase opacity-90">
-          TAMBAH {childInfo.label}
+          Tambah {childInfo.label}
         </span>
       </div>
 
-      <div className="p-3 pt-0">
-        <form id="form-add-node" onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <div>
-            <label className="text-[10px] font-bold text-muted-foreground uppercase">
-              Sub Tematik / Nama Pohon
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="Masukkan nama pohon..."
-              value={namaPohon}
-              onChange={(e) => setNamaPohon(e.target.value)}
-              className="w-full border border-input rounded p-1.5 text-xs outline-none focus:border-ring transition"
-            />
-          </div>
+      <form id="form-add-node" onSubmit={handleSubmit} className="flex flex-col gap-3 text-xs">
+        <div>
+          <label className="font-bold text-foreground block mb-1">Nama {childInfo.label}</label>
+          <input
+            type="text"
+            required
+            placeholder="Masukkan nama..."
+            value={namaPohon}
+            onChange={(e) => setNamaPohon(e.target.value)}
+            className="w-full border border-input rounded p-2 focus:ring-2 focus:ring-ring outline-none"
+          />
+        </div>
 
-          <div className="border border-form-highlight-border rounded p-2 bg-form-highlight-bg/30">
-            <div className="text-center mb-2">
-              <label className="text-[10px] font-bold text-form-highlight-text uppercase">
-                INDIKATOR {childInfo.label} :
-              </label>
-            </div>
+        <div className="border border-foreground/40 rounded p-2 bg-form-highlight-bg/50">
+          <label className="font-bold text-foreground block mb-2 text-center border-b border-form-highlight-border pb-1">
+            INDIKATOR
+          </label>
 
-            {indikators.map((ind, idx) => (
-              <div
-                key={idx}
-                className="mb-3 border-b border-border pb-2 last:border-0 last:pb-0"
-              >
-                <div className="mb-2">
-                  <label className="text-[9px] font-bold text-muted-foreground">
-                    NAMA INDIKATOR {idx + 1}:
-                  </label>
+          {indikators.map((ind, idx) => (
+            <div
+              key={idx}
+              className="mb-4 border-b border-border pb-2 last:border-0 last:pb-0"
+            >
+              <div className="mb-2">
+                <label className="text-[10px] font-semibold text-black">
+                  Nama Indikator {idx + 1}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={ind.indikator}
+                  onChange={(e) => handleIndikatorChange(idx, 'indikator', e.target.value)}
+                  className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
+                  placeholder="Contoh: Meningkatnya..."
+                />
+              </div>
+              <div className="flex gap-2">
+                <div className="w-1/3">
+                  <label className="text-[10px] font-semibold text-black">Target</label>
                   <input
                     type="text"
                     required
-                    value={ind.indikator}
-                    onChange={(e) => handleIndikatorChange(idx, 'indikator', e.target.value)}
-                    className="w-full border border-foreground rounded p-1.5 text-xs font-semibold"
-                    placeholder={`Masukkan nama indikator ${idx + 1}`}
-                  />
-                </div>
-                <div className="mb-2">
-                  <label className="text-[9px] font-bold text-muted-foreground">TARGET:</label>
-                  <input
-                    type="number"
-                    required
                     value={ind.targets[0].nilai}
                     onChange={(e) => handleTargetChange(idx, 0, 'nilai', e.target.value)}
-                    className="w-full border border-input rounded p-1.5 text-xs bg-muted/50"
-                    placeholder="Target"
+                    className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
+                    placeholder="Contoh: 100"
                   />
                 </div>
-                <div className="mb-2">
-                  <label className="text-[9px] font-bold text-muted-foreground">SATUAN:</label>
+                <div className="w-2/3">
+                  <label className="text-[10px] font-semibold text-black">Satuan</label>
                   <input
                     type="text"
                     required
                     value={ind.targets[0].satuan}
                     onChange={(e) => handleTargetChange(idx, 0, 'satuan', e.target.value)}
-                    className="w-full border border-input rounded p-1.5 text-xs bg-muted/50"
-                    placeholder="Satuan"
+                    className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
+                    placeholder="Contoh: Persen/Dokumen"
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeIndikator(idx)}
-                  className="text-destructive text-[10px] hover:underline w-full text-right"
-                >
-                  Hapus Indikator
-                </button>
               </div>
-            ))}
+              <button
+                type="button"
+                onClick={() => removeIndikator(idx)}
+                className="text-destructive text-[10px] mt-1 hover:underline w-full text-right"
+              >
+                Hapus Indikator
+              </button>
+            </div>
+          ))}
 
-            <button
-              type="button"
-              onClick={addIndikator}
-              className="w-full border border-form-highlight-border text-form-highlight-text rounded text-[10px] py-1 hover:bg-form-highlight-bg transition"
-            >
-              + Tambah Indikator
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={addIndikator}
+            className="w-full mt-2 border border-dashed border-foreground/40 text-foreground rounded p-1 bg-white hover:bg-foreground/5 transition"
+          >
+            + Tambah Indikator
+          </button>
+        </div>
 
-          <div>
-            <label className="text-[10px] font-bold text-muted-foreground uppercase">KETERANGAN:</label>
-            <textarea
-              rows={2}
-              placeholder="Masukkan keterangan..."
-              value={keteranganPohon}
-              onChange={(e) => setKeteranganPohon(e.target.value)}
-              className="w-full border border-input rounded p-1.5 text-xs outline-none focus:border-ring"
-            />
-          </div>
+        <div>
+          <label className="font-bold text-foreground block mb-1">Keterangan</label>
+          <textarea
+            rows={2}
+            placeholder="Keterangan tambahan..."
+            value={keteranganPohon}
+            onChange={(e) => setKeteranganPohon(e.target.value)}
+            className="w-full border border-input rounded p-2 focus:ring-2 focus:ring-ring outline-none"
+          />
+        </div>
 
-          <div className="flex flex-col gap-2 mt-1">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 rounded font-bold text-xs transition"
-            >
-              {isLoading ? 'Menyimpan...' : 'Simpan'}
-            </button>
-            <button
-              type="button"
-              onClick={onCancel}
-              disabled={isLoading}
-              className="w-full bg-destructive hover:bg-destructive/90 text-white py-1.5 rounded font-bold text-xs transition"
-            >
-              Batal
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex gap-2 mt-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isLoading}
+            className="flex-1 bg-destructive/90 hover:bg-destructive text-white py-2 rounded font-bold transition disabled:opacity-50"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="flex-1 bg-[#3072D6]/90 hover:bg-[#3072D6] text-white py-2 rounded font-bold transition disabled:opacity-50 flex justify-center items-center gap-2"
+          >
+            {isLoading ? 'Menyimpan...' : 'Simpan'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

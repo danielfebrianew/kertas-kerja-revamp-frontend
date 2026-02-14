@@ -15,17 +15,31 @@ import { TreePine, ChevronDown, Loader2 } from 'lucide-react';
 import { FilterHeader } from '@/components/filter-header';
 import PohonNode from './_components/PohonNode';
 import Cookies from 'js-cookie';
+import { IconHome } from '@/components/ui/icons';
+import { toast } from 'sonner';
 import './treeflex.css';
+
+function mapPohonResponse(node: Record<string, unknown>): PohonKinerja {
+  const { tema, childs, ...rest } = node;
+  return {
+    ...rest,
+    nama_pohon: (node.nama_pohon as string) ?? (tema as string) ?? '',
+    childs: Array.isArray(childs)
+      ? (childs as Record<string, unknown>[]).map(mapPohonResponse)
+      : undefined,
+  } as PohonKinerja;
+}
 
 function getTahunFromCookie(): string {
   try {
     const raw = Cookies.get('tahun');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      return parsed.value || '';
-    }
+    if (!raw) return '';
+    const parsed = JSON.parse(raw);
+    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
   } catch {
-    // ignore
+    const raw = Cookies.get('tahun');
+    if (raw && /^\d{4}$/.test(raw)) return raw;
+    toast.error('Format cookie tahun tidak valid');
   }
   return '';
 }
@@ -78,7 +92,7 @@ function PohonContent() {
       const res = await fetchApi<PohonPemdaResponse>(
         `/pohon_kinerja_admin/tematik/${selectedId}`
       );
-      setPohonData(res.data ? [res.data] : []);
+      setPohonData(res.data ? [mapPohonResponse(res.data as unknown as Record<string, unknown>)] : []);
     } catch (err) {
       console.error('Failed to fetch pohon:', err);
     } finally {
@@ -125,8 +139,8 @@ function PohonContent() {
       <FilterHeader onActivate={handleActivate} />
 
       {/* Breadcrumb */}
-      <p className="mt-4 text-sm text-muted-foreground">
-        Pemda / <span className="text-foreground font-medium">Pohon Kinerja</span>
+      <p className="mt-4 text-sm text-muted-foreground flex items-center gap-1">
+        <IconHome /> / Pemda / <span className="text-foreground font-medium">Pohon Kinerja</span>
       </p>
 
       {/* No tahun selected */}

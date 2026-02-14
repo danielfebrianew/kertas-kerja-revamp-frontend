@@ -17,7 +17,7 @@ export interface PohonIndikator {
 export interface PohonKinerja {
   id: number;
   parent: number | null;
-  tema: string;
+  nama_pohon: string;
   jenis_pohon: string;
   level_pohon: number;
   keterangan: string;
