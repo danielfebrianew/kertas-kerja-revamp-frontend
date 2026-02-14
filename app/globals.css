@@ -1,26 +1,204 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-space);
+  --font-mono: var(--font-mono);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Pohon tree semantic colors */
+  --color-pohon-strategic-from: var(--pohon-strategic-from);
+  --color-pohon-strategic-to: var(--pohon-strategic-to);
+  --color-pohon-strategic-border: var(--pohon-strategic-border);
+  --color-pohon-tactical-from: var(--pohon-tactical-from);
+  --color-pohon-tactical-to: var(--pohon-tactical-to);
+  --color-pohon-tactical-border: var(--pohon-tactical-border);
+  --color-pohon-operational-from: var(--pohon-operational-from);
+  --color-pohon-operational-to: var(--pohon-operational-to);
+  --color-pohon-operational-border: var(--pohon-operational-border);
+  --color-pohon-tematik-border: var(--pohon-tematik-border);
+  --color-pohon-tematik-bg: var(--pohon-tematik-bg);
+  --color-pohon-tematik-text: var(--pohon-tematik-text);
+
+  /* Form highlight colors */
+  --color-form-highlight: var(--form-highlight);
+  --color-form-highlight-bg: var(--form-highlight-bg);
+  --color-form-highlight-text: var(--form-highlight-text);
+  --color-form-highlight-border: var(--form-highlight-border);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --radius: 0.625rem;
+
+  /*
+   * ===== BRAND COLORS — driven by lib/colors.ts =====
+   *
+   * --brand-60, --brand-30, --brand-10 are injected on <html>
+   * from lib/colors.ts via layout.tsx. All colors below are
+   * derived using color-mix() so changing the hex values in
+   * lib/colors.ts updates the entire theme.
+   */
+
+  /* 60% — Surfaces (derived from brand-60) */
+  --background: var(--brand-60);
+  --card: color-mix(in oklch, var(--brand-60) 50%, white);
+  --popover: color-mix(in oklch, var(--brand-60) 50%, white);
+  --secondary: color-mix(in oklch, var(--brand-60) 92%, var(--brand-30));
+  --muted: color-mix(in oklch, var(--brand-60) 93%, var(--brand-30));
+
+  /* 30% — Text & structure (derived from brand-30) */
+  --foreground: var(--brand-30);
+  --card-foreground: var(--brand-30);
+  --popover-foreground: var(--brand-30);
+  --primary: color-mix(in oklch, var(--brand-30) 80%, var(--brand-60));
+  --primary-foreground: var(--brand-60);
+  --secondary-foreground: color-mix(in oklch, var(--brand-30) 80%, var(--brand-60));
+  --muted-foreground: color-mix(in oklch, var(--brand-30) 55%, var(--brand-60));
+
+  /* 10% — Accent (derived from brand-10) */
+  --accent: var(--brand-10);
+  --accent-foreground: var(--brand-30);
+
+  --destructive: oklch(0.577 0.245 27.325);
+
+  --border: color-mix(in oklch, var(--brand-60) 85%, var(--brand-30));
+  --input: color-mix(in oklch, var(--brand-60) 85%, var(--brand-30));
+  --ring: color-mix(in oklch, var(--brand-10) 65%, var(--brand-30));
+
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.831 0.148 85);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  /* Sidebar */
+  --sidebar: color-mix(in oklch, var(--brand-30) 80%, var(--brand-60));
+  --sidebar-foreground: color-mix(in oklch, var(--brand-60) 90%, white);
+  --sidebar-primary: var(--brand-10);
+  --sidebar-primary-foreground: var(--brand-30);
+  --sidebar-accent: color-mix(in oklch, var(--brand-30) 65%, var(--brand-60));
+  --sidebar-accent-foreground: color-mix(in oklch, var(--brand-60) 90%, white);
+  --sidebar-border: color-mix(in oklch, var(--brand-30) 55%, var(--brand-60));
+  --sidebar-ring: color-mix(in oklch, var(--brand-10) 65%, var(--brand-30));
+
+  /* Pohon tree semantic gradients — domain colors, independent of brand */
+  --pohon-strategic-from: #CA3636;
+  --pohon-strategic-to: #BD04A1;
+  --pohon-strategic-border: oklch(0.50 0.20 25);
+  --pohon-tactical-from: #3673CA;
+  --pohon-tactical-to: #08D2FB;
+  --pohon-tactical-border: oklch(0.55 0.15 250);
+  --pohon-operational-from: #139052;
+  --pohon-operational-to: #2DCB06;
+  --pohon-operational-border: oklch(0.55 0.18 145);
+  --pohon-tematik-border: var(--brand-30);
+  --pohon-tematik-bg: var(--brand-60);
+  --pohon-tematik-text: var(--brand-30);
+
+  /* Form highlight (derived from brand-10) */
+  --form-highlight: var(--brand-10);
+  --form-highlight-bg: color-mix(in oklch, var(--brand-10) 15%, var(--brand-60));
+  --form-highlight-text: color-mix(in oklch, var(--brand-10) 60%, var(--brand-30));
+  --form-highlight-border: color-mix(in oklch, var(--brand-10) 70%, var(--brand-60));
+}
+
+.dark {
+  /* Dark surfaces — darkened brand-30 */
+  --background: color-mix(in oklch, var(--brand-30), black 30%);
+  --card: color-mix(in oklch, var(--brand-30), black 20%);
+  --popover: color-mix(in oklch, var(--brand-30), black 20%);
+  --secondary: color-mix(in oklch, var(--brand-30), black 10%);
+  --muted: color-mix(in oklch, var(--brand-30), black 10%);
+
+  /* Light text — lightened brand-60 */
+  --foreground: color-mix(in oklch, var(--brand-60) 95%, white);
+  --card-foreground: color-mix(in oklch, var(--brand-60) 95%, white);
+  --popover-foreground: color-mix(in oklch, var(--brand-60) 95%, white);
+  --secondary-foreground: color-mix(in oklch, var(--brand-60) 95%, white);
+  --muted-foreground: color-mix(in oklch, var(--brand-60) 50%, var(--brand-30));
+
+  /* In dark mode, accent becomes the primary action color */
+  --primary: var(--brand-10);
+  --primary-foreground: color-mix(in oklch, var(--brand-30), black 40%);
+  --accent: var(--brand-10);
+  --accent-foreground: color-mix(in oklch, var(--brand-30), black 40%);
+
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: color-mix(in oklch, var(--brand-10) 65%, var(--brand-30));
+
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  /* Sidebar — darker than dark background */
+  --sidebar: color-mix(in oklch, var(--brand-30), black 40%);
+  --sidebar-foreground: color-mix(in oklch, var(--brand-60) 95%, white);
+  --sidebar-primary: var(--brand-10);
+  --sidebar-primary-foreground: color-mix(in oklch, var(--brand-30), black 40%);
+  --sidebar-accent: color-mix(in oklch, var(--brand-30), black 15%);
+  --sidebar-accent-foreground: color-mix(in oklch, var(--brand-60) 95%, white);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: color-mix(in oklch, var(--brand-10) 65%, var(--brand-30));
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

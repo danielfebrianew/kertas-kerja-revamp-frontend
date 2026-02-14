@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm --version:*)",
+      "Bash(pnpm store prune:*)",
+      "Bash(if not exist \"app\\\\dashboard\" mkdir \"app\\\\dashboard\")",
+      "Bash(pnpm dev)",
+      "Bash(pnpm dlx shadcn@latest init:*)",
+      "Bash(pnpm dlx shadcn@latest add:*)"
+    ]
+  }
+}
