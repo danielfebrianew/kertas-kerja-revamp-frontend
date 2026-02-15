@@ -1,4 +1,4 @@
-import type { PohonIndikator } from './pohon';
+import type { PohonIndikator } from './PohonPemda';
 
 export interface TematikPemdaItem {
   id: number;
