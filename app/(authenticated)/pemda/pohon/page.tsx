@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { fetchApi } from '@/lib/fetcher';
 import { toast } from 'sonner';
-import type { TematikItem, PohonKinerja, TematikResponse, PohonPemdaResponse } from '@/types/pohon';
+import type { TematikItem, PohonKinerja, TematikResponse, PohonPemdaResponse } from '@/types/PohonPemda';
 import {
   Card,
   CardContent,
@@ -55,8 +55,8 @@ function PohonContent() {
   const confirm = useConfirm();
   const [tematikList, setTematikList] = useState<TematikItem[]>([]);
   const [pohonData, setPohonData] = useState<PohonKinerja[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [tematikLoading, setTematikLoading] = useState(false);
+  const [loading, setLoading] = useState(!!selectedId);
+  const [tematikLoading, setTematikLoading] = useState(!!tahun);
   const tematikFetchedRef = useRef<string | null>(null);
 
   // Fetch tematik when tahun changes

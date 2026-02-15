@@ -1,4 +1,4 @@
-// === Pohon Kinerja API Types ===
+// === Shared Pohon Kinerja Types ===
 
 export interface PohonTarget {
   id_target: string;
@@ -28,13 +28,15 @@ export interface PohonKinerja {
   childs?: PohonKinerja[];
 }
 
+// === Pemda Response Types ===
+
 export interface PohonPemdaResponse {
   code: number;
   status: string;
   data: PohonKinerja;
 }
 
-// === Tematik List API Types ===
+// === Tematik List Types ===
 
 export interface TematikItem {
   id: number;

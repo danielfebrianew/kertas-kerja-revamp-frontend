@@ -14,7 +14,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import Cookies from 'js-cookie';
+import { decodeJwt } from '@/lib/jwt';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,7 +45,11 @@ export default function LoginPage() {
       }
 
       if (data.data?.token) {
-        Cookies.set('bearer_token', data.data.token);
+        const token = data.data.token;
+        const user = decodeJwt(token);
+
+        Cookies.set('bearer_token', token);
+        Cookies.set('user', JSON.stringify(user));
         router.push('/dashboard');
       } else {
         throw new Error('No token received');
@@ -59,6 +65,13 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
+          <Image
+            src="/icon.png"
+            alt="Kertas Kerja"
+            width={64}
+            height={64}
+            className="mx-auto mb-3"
+          />
           <h1 className="font-display text-2xl font-semibold tracking-tight">
             Kertas Kerja
           </h1>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { fetchApi } from '@/lib/fetcher';
-import type { PohonPemdaResponse } from '@/types/pohon';
+import type { PohonPemdaResponse } from '@/types/PohonPemda';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import Cookies from 'js-cookie';
