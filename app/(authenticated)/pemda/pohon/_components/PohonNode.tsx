@@ -59,6 +59,7 @@ const PohonNode: React.FC<PohonNodeProps> = ({
   const [addModalInfo, setAddModalInfo] = useState<ChildInfo | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isEditLoading, setIsEditLoading] = useState(false);
+  const [isAddingChild, setIsAddingChild] = useState(false);
 
   useEffect(() => {
     setNodeData(node);
@@ -225,8 +226,22 @@ const PohonNode: React.FC<PohonNodeProps> = ({
         </div>
       )}
 
+      {/* Spinner saat menambahkan child */}
+      {isAddingChild && (
+        <ul>
+          <li>
+            <div className="tf-nc tf rounded-lg shadow-lg border-border max-w-sm min-w-[320px] relative" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '120px' }}>
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                <p className="text-xs text-muted-foreground">Menambahkan data...</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      )}
+
       {/* Children & Add form */}
-      {(isExpanded || addModalInfo) && (hasChildren || addModalInfo) && (
+      {!isAddingChild && (isExpanded || addModalInfo) && (hasChildren || addModalInfo) && (
         <ul>
           {isExpanded &&
             hasChildren &&
@@ -252,10 +267,17 @@ const PohonNode: React.FC<PohonNodeProps> = ({
                   parentId={nodeData.id}
                   childInfo={addModalInfo}
                   onCancel={() => setAddModalInfo(null)}
-                  onSuccess={() => {
+                  onSuccess={(newNode) => {
                     setAddModalInfo(null);
-                    if (onTreeRefresh) onTreeRefresh();
-                    else window.location.reload();
+                    setIsAddingChild(true);
+                    setTimeout(() => {
+                      setNodeData((prev) => ({
+                        ...prev,
+                        childs: [...(prev.childs || []), newNode],
+                      }));
+                      setIsExpanded(true);
+                      setIsAddingChild(false);
+                    }, 500);
                   }}
                 />
               </div>

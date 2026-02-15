@@ -4,6 +4,7 @@ import { Suspense, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { fetchApi } from '@/lib/fetcher';
+import { toast } from 'sonner';
 import type { TematikItem, PohonKinerja, TematikResponse, PohonPemdaResponse } from '@/types/pohon';
 import {
   Card,
@@ -16,7 +17,7 @@ import { FilterHeader } from '@/components/filter-header';
 import PohonNode from './_components/PohonNode';
 import Cookies from 'js-cookie';
 import { IconHome } from '@/components/ui/icons';
-import { toast } from 'sonner';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import './treeflex.css';
 
 function mapPohonResponse(node: Record<string, unknown>): PohonKinerja {
@@ -51,6 +52,7 @@ function PohonContent() {
   const [tahun, setTahun] = useState(() => getTahunFromCookie());
   const selectedId = searchParams.get('id') ?? '';
 
+  const confirm = useConfirm();
   const [tematikList, setTematikList] = useState<TematikItem[]>([]);
   const [pohonData, setPohonData] = useState<PohonKinerja[]>([]);
   const [loading, setLoading] = useState(false);
@@ -123,13 +125,15 @@ function PohonContent() {
   };
 
   const handleDeleteNode = async (nodeId: number) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus node ini?')) return;
+    const confirmed = await confirm();
+    if (!confirmed) return;
     try {
-      await fetchApi(`/pohon-kinerja/${nodeId}`, { method: 'DELETE' });
+      await fetchApi(`/pohon_kinerja_admin/delete/${nodeId}`, { method: 'DELETE' });
+      toast.success('Node berhasil dihapus');
       fetchPohonData();
     } catch (err) {
-      console.error('Delete failed:', err);
-      alert('Gagal menghapus node');
+      const message = err instanceof Error ? err.message : 'Gagal menghapus node';
+      toast.error(message);
     }
   };
 

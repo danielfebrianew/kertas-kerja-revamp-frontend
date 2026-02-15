@@ -9,6 +9,7 @@ import { FilterHeader } from '@/components/filter-header';
 import { IconHome } from '@/components/ui/icons';
 import { Loader2, Palette, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import Cookies from 'js-cookie';
 import TematikTable from './_components/TematikTable';
 
@@ -33,6 +34,7 @@ function TematikContent() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
+  const confirm = useConfirm();
   const fetchedRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -88,7 +90,8 @@ function TematikContent() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus tematik ini?')) return;
+    const confirmed = await confirm({ title: 'Hapus?', message: 'Apakah Anda yakin ingin menghapus tematik ini?' });
+    if (!confirmed) return;
     try {
       await fetchApi(`/pohon_kinerja_admin/delete/${id}`, { method: 'DELETE' });
       toast.success('Tematik berhasil dihapus');

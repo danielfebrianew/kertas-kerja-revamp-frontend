@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
+import { ConfirmDialogProvider } from '@/components/ui/confirm-dialog';
 import Cookies from 'js-cookie';
 
 export default function AuthenticatedLayout({
@@ -29,15 +30,17 @@ export default function AuthenticatedLayout({
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main className="flex flex-1 flex-col overflow-y-auto w-full">
-        <div className="p-4 md:hidden border-b border-border">
-          <SidebarTrigger />
-        </div>
-        {children}
-      </main>
-      <Toaster />
-    </SidebarProvider>
+    <ConfirmDialogProvider>
+      <SidebarProvider>
+        <AppSidebar />
+        <main className="flex flex-1 flex-col overflow-y-auto w-full">
+          <div className="p-4 md:hidden border-b border-border">
+            <SidebarTrigger />
+          </div>
+          {children}
+        </main>
+        <Toaster position="top-center" />
+      </SidebarProvider>
+    </ConfirmDialogProvider>
   );
 }

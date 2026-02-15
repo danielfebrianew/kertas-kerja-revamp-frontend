@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { fetchApi } from '@/lib/fetcher';
+import type { PohonKinerja } from '@/types/pohon';
 import type { ChildInfo } from '../../_utils';
 import { getHeaderStyle } from '../../_utils';
 import { toast } from 'sonner';
@@ -11,7 +12,7 @@ interface FormAddChildModalProps {
   parentId: number;
   childInfo: ChildInfo;
   onCancel: () => void;
-  onSuccess: () => void;
+  onSuccess: (newNode: PohonKinerja) => void;
 }
 
 function getTahunFromCookie(): string {
@@ -82,31 +83,31 @@ export const FormAddChildModal: React.FC<FormAddChildModalProps> = ({
     setIsLoading(true);
 
     const payload = {
-      parentId,
+      parent: parentId,
       nama_pohon: namaPohon,
-      keterangan: keteranganPohon,
+      Keterangan: keteranganPohon,
       tahun,
-      jenisPohon: childInfo.nextJenis,
-      levelPohon: childInfo.nextLevel,
-      status: 'DRAFT',
-      indikators: indikators.map((ind) => ({
+      jenis_pohon: childInfo.nextJenis,
+      level_pohon: childInfo.nextLevel,
+      kode_opd: null,
+      status: '',
+      tagging: [],
+      indikator: indikators.map((ind) => ({
         indikator: ind.indikator,
-        keterangan: ind.keterangan,
-        tahun,
-        targets: ind.targets.map((t) => ({
-          nilai: Number(t.nilai),
+        target: ind.targets.map((t) => ({
+          target: t.nilai,
           satuan: t.satuan,
-          tahun,
         })),
       })),
     };
 
     try {
-      await fetchApi('/pohon-kinerja', {
+      const res = await fetchApi<{ data: PohonKinerja }>('/pohon_kinerja_admin/create', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
-      onSuccess();
+      toast.success('Data berhasil ditambahkan');
+      onSuccess({ ...res.data, childs: [] });
     } catch (error) {
       const code = (error as Error & { code?: number }).code;
       const message = error instanceof Error ? error.message : 'Terjadi kesalahan';
