@@ -6,7 +6,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import { ConfirmDialogProvider } from '@/components/ui/confirm-dialog';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 
 export default function AuthenticatedLayout({
   children,
@@ -17,7 +17,7 @@ export default function AuthenticatedLayout({
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = Cookies.get('bearer_token');
+    const token = getCookie('bearer_token');
     if (!token) {
       router.push('/');
       return;

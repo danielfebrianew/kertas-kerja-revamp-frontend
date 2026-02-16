@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ShieldCheck, User, BadgeCheck, Building2 } from 'lucide-react';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 import type { JwtPayload } from '@/lib/jwt';
 
 export default function DashboardPage() {
@@ -17,8 +17,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const raw = Cookies.get('user');
-      if (raw) setUser(JSON.parse(raw));
+      const raw = getCookie('user');
+      if (raw) setUser(JSON.parse(raw.toString()));
     } catch { /* ignore */ }
   }, []);
 

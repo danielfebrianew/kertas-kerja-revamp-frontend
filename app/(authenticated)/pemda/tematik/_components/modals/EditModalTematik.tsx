@@ -5,7 +5,7 @@ import { fetchApi } from '@/lib/fetcher';
 import type { PohonPemdaResponse } from '@/types/PohonPemda';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 
 interface IndikatorState {
   id_indikator: string | null;
@@ -21,12 +21,12 @@ interface EditModalTematikProps {
 
 function getTahunFromCookie(): string {
   try {
-    const raw = Cookies.get('tahun');
+    const raw = getCookie('tahun');
     if (!raw) return String(new Date().getFullYear());
     const parsed = JSON.parse(raw);
     return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
   } catch {
-    const raw = Cookies.get('tahun');
+    const raw = getCookie('tahun');
     if (raw && /^\d{4}$/.test(raw)) return raw;
     toast.error('Format cookie tahun tidak valid');
   }

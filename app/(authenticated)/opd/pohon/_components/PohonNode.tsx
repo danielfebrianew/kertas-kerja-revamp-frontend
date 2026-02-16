@@ -5,7 +5,7 @@ import type { PohonKinerja, PohonIndikator } from '@/types/PohonPemda';
 import { getChildInfo, getPohonStyle, getHeaderStyle, type ChildInfo } from '../_utils';
 import { FormAddChildModal } from './modals/AddModal';
 import { FormEditNode } from './modals/EditModal';
-import { IconCetak, IconEye, IconEyeOff } from '@/components/ui/icons';
+import { IconAdd, IconCetak, IconDelete, IconEdit, IconEye, IconEyeOff } from '@/components/ui/icons';
 import { Loader2 } from 'lucide-react';
 
 interface PohonNodeProps {
@@ -23,27 +23,6 @@ const getButtonColor = (jenisPohon: string) => {
   return 'border-green-600 text-green-600 hover:bg-green-600 hover:text-white';
 };
 
-const IconAdd = () => (
-  <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-    <path d="M9 12h6" />
-    <path d="M12 9v6" />
-  </svg>
-);
-const IconEdit = () => (
-  <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
-    <path d="M13.5 6.5l4 4" />
-  </svg>
-);
-const IconDelete = () => (
-  <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    <line x1="10" y1="11" x2="10" y2="17" />
-    <line x1="14" y1="11" x2="14" y2="17" />
-  </svg>
-);
 const PohonNode: React.FC<PohonNodeProps> = ({
   node,
   onTreeRefresh,

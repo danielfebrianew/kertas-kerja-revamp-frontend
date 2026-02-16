@@ -1,3 +1,4 @@
+export { IconAdd } from './IconAdd';
 export { IconCetak } from './IconCetak';
 export { IconDelete } from './IconDelete';
 export { IconEdit } from './IconEdit';

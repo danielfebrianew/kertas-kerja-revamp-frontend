@@ -5,7 +5,7 @@ import { fetchApi } from '@/lib/fetcher';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, Shield, Loader2 } from 'lucide-react';
 import type { OPD, OPDResponse } from '@/types/opd';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie } from 'cookies-next';
 
 interface FilterHeaderProps {
   onActivate?: (tahun: string, kodeOpd: string) => void;
@@ -26,14 +26,14 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
 
   useEffect(() => {
     try {
-      const opdCookie = Cookies.get('opd');
-      const tahunCookie = Cookies.get('tahun');
+      const opdCookie = getCookie('opd');
+      const tahunCookie = getCookie('tahun');
       if (opdCookie) {
-        const parsed = JSON.parse(opdCookie);
+        const parsed = JSON.parse(opdCookie.toString());
         setSelectedOpd(parsed.value || '');
       }
       if (tahunCookie) {
-        const parsed = JSON.parse(tahunCookie);
+        const parsed = JSON.parse(tahunCookie.toString());
         setSelectedTahun(parsed.value || '');
       }
     } catch {
@@ -49,7 +49,7 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
       try {
         setOpdLoading(true);
         const res = await fetchApi<OPDResponse>('/opd/findall');
-        setOpdList(res.data ?? []);
+        setOpdList(res.data?.data ?? []);
       } catch (err) {
         console.error('Failed to fetch OPD:', err);
       } finally {
@@ -68,14 +68,14 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
     const opdItem = opdList.find((o) => o.kode_opd === selectedOpd);
     const tahunItem = TAHUN_OPTIONS.find((t) => t.value === selectedTahun);
 
-    Cookies.set(
+    setCookie(
       'opd',
       JSON.stringify({
         label: opdItem?.nama_opd ?? selectedOpd,
         value: selectedOpd,
       })
     );
-    Cookies.set(
+    setCookie(
       'tahun',
       JSON.stringify({
         label: tahunItem?.label ?? `Tahun ${selectedTahun}`,

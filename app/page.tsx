@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 import { decodeJwt } from '@/lib/jwt';
 
 export default function LoginPage() {
@@ -48,8 +48,8 @@ export default function LoginPage() {
         const token = data.data.token;
         const user = decodeJwt(token);
 
-        Cookies.set('bearer_token', token);
-        Cookies.set('user', JSON.stringify(user));
+        setCookie('bearer_token', token);
+        setCookie('user', JSON.stringify(user));
         router.push('/dashboard');
       } else {
         throw new Error('No token received');

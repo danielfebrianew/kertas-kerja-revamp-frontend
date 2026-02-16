@@ -13,7 +13,7 @@ import {
   TreePalmIcon,
   DatabaseIcon,
 } from 'lucide-react';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 
 // 1. Tambahkan SidebarTrigger ke dalam import
 import {
@@ -66,14 +66,14 @@ export function AppSidebar() {
 
   useEffect(() => {
     try {
-      const raw = Cookies.get('user');
-      if (raw) setUser(JSON.parse(raw));
+      const raw = getCookie('user');
+      if (raw) setUser(JSON.parse(raw.toString()));
     } catch { /* ignore */ }
   }, []);
 
   const handleLogout = () => {
-    Cookies.remove('bearer_token');
-    Cookies.remove('user');
+    deleteCookie('bearer_token');
+    deleteCookie('user');
     router.push('/');
   };
 

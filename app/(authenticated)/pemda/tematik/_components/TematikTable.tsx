@@ -158,12 +158,26 @@ export default function TematikTable({ data, onEdit, onDelete }: TematikTablePro
             fontWeight: 700,
             textTransform: 'capitalize',
           },
+          
+          // 1. KEMBALIKAN KODE INI: Menghilangkan panah sorting di sebelah teks
           '& .MuiDataGrid-iconButtonContainer': {
             display: 'none',
           },
+
+          // 2. PERTAHANKAN KODE INI: Memaksa menu titik tiga selalu tampil & ada efek hover
+          '& .MuiDataGrid-menuIcon': {
+            visibility: 'visible !important',
+            width: 'auto',
+          },
           '& .MuiDataGrid-menuIconButton': {
             color: 'var(--primary-foreground)',
+            transition: 'background-color 0.2s ease',
+            opacity: 1,
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            }
           },
+          
           '& .MuiDataGrid-cell': {
             display: 'flex',
             alignItems: 'center',

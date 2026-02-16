@@ -6,7 +6,7 @@ import type { PohonKinerja } from '@/types/PohonPemda';
 import type { ChildInfo } from '../../_utils';
 import { getHeaderStyle } from '../../_utils';
 import { toast } from 'sonner';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 
 interface FormAddChildModalProps {
   parentId: number;
@@ -17,13 +17,13 @@ interface FormAddChildModalProps {
 
 function getTahunFromCookie(): string {
   try {
-    const raw = Cookies.get('tahun');
+    const raw = getCookie('tahun');
     if (!raw) return String(new Date().getFullYear());
     const parsed = JSON.parse(raw);
     return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
   } catch {
     // Cookie bukan JSON, pakai langsung sebagai string
-    const raw = Cookies.get('tahun');
+    const raw = getCookie('tahun');
     if (raw && /^\d{4}$/.test(raw)) return raw;
     toast.error('Format cookie tahun tidak valid');
   }

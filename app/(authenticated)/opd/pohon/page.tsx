@@ -12,14 +12,15 @@ import {
 import { Building2, Loader2 } from 'lucide-react';
 import { FilterHeader } from '@/components/filter-header';
 import PohonNode from './_components/PohonNode';
-import { IconHome, IconCetak } from '@/components/ui/icons';
+import { IconAdd, IconCetak } from '@/components/ui/icons';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { useConfirm } from '@/components/ui/confirm-dialog';
-import Cookies from 'js-cookie';
+import { getCookie } from 'cookies-next';
 import './treeflex.css';
 
 function getCookieValue(name: string): string {
   try {
-    const raw = Cookies.get(name);
+    const raw = getCookie(name);
     if (!raw) return '';
     const parsed = JSON.parse(raw);
     return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
@@ -30,7 +31,7 @@ function getCookieValue(name: string): string {
 
 function getCookieLabel(name: string): string {
   try {
-    const raw = Cookies.get(name);
+    const raw = getCookie(name);
     if (!raw) return '';
     const parsed = JSON.parse(raw);
     return typeof parsed === 'object' ? parsed.label || '' : '';
@@ -49,14 +50,6 @@ function mapPohonResponse(node: Record<string, unknown>): PohonKinerja {
       : undefined,
   } as PohonKinerja;
 }
-
-const IconAdd = () => (
-  <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-    <path d="M9 12h6" />
-    <path d="M12 9v6" />
-  </svg>
-);
 
 function OpdPohonContent() {
   const [tahun, setTahun] = useState(() => getCookieValue('tahun'));
@@ -127,9 +120,7 @@ function OpdPohonContent() {
     <div className="px-6 py-6 md:px-10">
       <FilterHeader onActivate={handleActivate} />
 
-      <p className="mt-4 text-sm text-muted-foreground flex items-center gap-1">
-        <IconHome /> / OPD / <span className="text-foreground font-medium">Pohon Kinerja</span>
-      </p>
+      <Breadcrumb />
 
       {(!tahun || !kodeOpd) && (
         <div className="mt-10 flex flex-col items-center justify-center py-20 text-center">

@@ -15,8 +15,8 @@ import {
 import { TreePine, ChevronDown, Loader2 } from 'lucide-react';
 import { FilterHeader } from '@/components/filter-header';
 import PohonNode from './_components/PohonNode';
-import Cookies from 'js-cookie';
-import { IconHome } from '@/components/ui/icons';
+import { getCookie } from 'cookies-next';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { useConfirm } from '@/components/ui/confirm-dialog';
 import './treeflex.css';
 
@@ -33,13 +33,13 @@ function mapPohonResponse(node: Record<string, unknown>): PohonKinerja {
 
 function getTahunFromCookie(): string {
   try {
-    const raw = Cookies.get('tahun');
+    const raw = getCookie('tahun');
     if (!raw) return '';
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(raw.toString());
     return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
   } catch {
-    const raw = Cookies.get('tahun');
-    if (raw && /^\d{4}$/.test(raw)) return raw;
+    const raw = getCookie('tahun');
+    if (raw && /^\d{4}$/.test(raw.toString())) return raw.toString();
     toast.error('Format cookie tahun tidak valid');
   }
   return '';
@@ -74,7 +74,7 @@ function PohonContent() {
         const res = await fetchApi<TematikResponse>(
           `/pohon_kinerja/tematik/${tahun}`
         );
-        setTematikList(res.data ?? []);
+        setTematikList(res.data.data ?? []);
       } catch (err) {
         console.error('Failed to fetch tematik:', err);
       } finally {
@@ -142,10 +142,7 @@ function PohonContent() {
       {/* Filter Header */}
       <FilterHeader onActivate={handleActivate} />
 
-      {/* Breadcrumb */}
-      <p className="mt-4 text-sm text-muted-foreground flex items-center gap-1">
-        <IconHome /> / Pemda / <span className="text-foreground font-medium">Pohon Kinerja</span>
-      </p>
+      <Breadcrumb />
 
       {/* No tahun selected */}
       {!tahun && (
