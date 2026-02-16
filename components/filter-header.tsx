@@ -29,11 +29,13 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
       const opdCookie = getCookie('opd');
       const tahunCookie = getCookie('tahun');
       if (opdCookie) {
-        const parsed = JSON.parse(opdCookie.toString());
+        const rawStr = typeof opdCookie === 'string' ? opdCookie : String(opdCookie);
+        const parsed = JSON.parse(rawStr);
         setSelectedOpd(parsed.value || '');
       }
       if (tahunCookie) {
-        const parsed = JSON.parse(tahunCookie.toString());
+        const rawStr = typeof tahunCookie === 'string' ? tahunCookie : String(tahunCookie);
+        const parsed = JSON.parse(rawStr);
         setSelectedTahun(parsed.value || '');
       }
     } catch {

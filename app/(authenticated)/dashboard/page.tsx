@@ -18,7 +18,7 @@ export default function DashboardPage() {
   useEffect(() => {
     try {
       const raw = getCookie('user');
-      if (raw) setUser(JSON.parse(raw.toString()));
+      if (raw) { const rawStr = typeof raw === 'string' ? raw : String(raw); setUser(JSON.parse(rawStr)); }
     } catch { /* ignore */ }
   }, []);
 

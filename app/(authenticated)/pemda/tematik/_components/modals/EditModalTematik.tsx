@@ -5,7 +5,7 @@ import { fetchApi } from '@/lib/fetcher';
 import type { PohonPemdaResponse } from '@/types/PohonPemda';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { getTahunFromCookie } from '@/lib/cookie';
 
 interface IndikatorState {
   id_indikator: string | null;
@@ -19,19 +19,6 @@ interface EditModalTematikProps {
   onSuccess: () => void;
 }
 
-function getTahunFromCookie(): string {
-  try {
-    const raw = getCookie('tahun');
-    if (!raw) return String(new Date().getFullYear());
-    const parsed = JSON.parse(raw);
-    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
-  } catch {
-    const raw = getCookie('tahun');
-    if (raw && /^\d{4}$/.test(raw)) return raw;
-    toast.error('Format cookie tahun tidak valid');
-  }
-  return String(new Date().getFullYear());
-}
 
 export default function EditModalTematik({ tematikId, onCancel, onSuccess }: EditModalTematikProps) {
   const tahun = getTahunFromCookie();
@@ -51,7 +38,7 @@ export default function EditModalTematik({ tematikId, onCancel, onSuccess }: Edi
         const res = await fetchApi<PohonPemdaResponse>(
           `/pohon_kinerja_admin/detail/${tematikId}`
         );
-        const data = res.data;
+        const data = res.data.data;
         const nama = data.nama_pohon ?? (data as unknown as Record<string, unknown>).tema as string ?? '';
 
         setNamaPohon(nama);

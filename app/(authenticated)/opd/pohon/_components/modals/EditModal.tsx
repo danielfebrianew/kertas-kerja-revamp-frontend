@@ -5,7 +5,7 @@ import { fetchApi } from '@/lib/fetcher';
 import type { PohonKinerja, PohonIndikator } from '@/types/PohonPemda';
 import { getHeaderStyle } from '../../_utils';
 import { toast } from 'sonner';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { getTahunFromCookie } from '@/lib/cookie';
 
 interface FormEditNodeProps {
   node: PohonKinerja;
@@ -13,20 +13,6 @@ interface FormEditNodeProps {
   onSuccess: (updatedNode: PohonKinerja) => void;
 }
 
-function getTahunFromCookie(): string {
-  try {
-    const raw = getCookie('tahun');
-    if (!raw) return String(new Date().getFullYear());
-    const parsed = JSON.parse(raw);
-    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
-  } catch {
-    // Cookie bukan JSON, pakai langsung sebagai string
-    const raw = getCookie('tahun');
-    if (raw && /^\d{4}$/.test(raw)) return raw;
-    toast.error('Format cookie tahun tidak valid');
-  }
-  return String(new Date().getFullYear());
-}
 
 export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -112,13 +98,13 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
       toast.success('Data berhasil diperbarui');
       onSuccess({
         ...node,
-        nama_pohon: res.data.nama_pohon ?? res.data.tema ?? node.nama_pohon,
-        keterangan: res.data.keterangan,
-        jenis_pohon: res.data.jenis_pohon,
-        level_pohon: res.data.level_pohon,
-        is_active: res.data.is_active,
-        jumlah_review: res.data.jumlah_review,
-        tagging: res.data.tagging,
+        nama_pohon: res.data.data.nama_pohon ?? res.data.data.tema ?? node.nama_pohon,
+        keterangan: res.data.data.keterangan,
+        jenis_pohon: res.data.data.jenis_pohon,
+        level_pohon: res.data.data.level_pohon,
+        is_active: res.data.data.is_active,
+        jumlah_review: res.data.data.jumlah_review,
+        tagging: res.data.data.tagging,
         indikator: indikators.map((ind) => ({
           id_indikator: ind.id_indikator || '',
           id_pokin: String(node.id),

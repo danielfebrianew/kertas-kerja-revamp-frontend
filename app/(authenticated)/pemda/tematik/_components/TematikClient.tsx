@@ -10,22 +10,8 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Loader2, Palette, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useConfirm } from '@/components/ui/confirm-dialog';
-import { getCookie } from 'cookies-next';
+import { getTahunFromCookie } from '@/lib/cookie';
 import TematikTable from './TematikTable';
-
-function getTahunFromCookie(): string {
-  try {
-    const raw = getCookie('tahun');
-    if (!raw) return '';
-    const parsed = JSON.parse(raw.toString());
-    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
-  } catch {
-    const raw = getCookie('tahun');
-    if (raw && /^\d{4}$/.test(raw.toString())) return raw.toString();
-    toast.error('Format cookie tahun tidak valid');
-  }
-  return '';
-}
 
 function TematikContent() {
   const [tahun, setTahun] = useState(() => getTahunFromCookie());

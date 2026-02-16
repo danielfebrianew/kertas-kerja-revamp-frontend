@@ -6,7 +6,7 @@ import type { PohonKinerja } from '@/types/PohonPemda';
 import type { ChildInfo } from '../../_utils';
 import { getHeaderStyle } from '../../_utils';
 import { toast } from 'sonner';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { getTahunFromCookie } from '@/lib/cookie';
 
 interface FormAddChildModalProps {
   parentId: number;
@@ -15,20 +15,6 @@ interface FormAddChildModalProps {
   onSuccess: (newNode: PohonKinerja) => void;
 }
 
-function getTahunFromCookie(): string {
-  try {
-    const raw = getCookie('tahun');
-    if (!raw) return String(new Date().getFullYear());
-    const parsed = JSON.parse(raw);
-    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
-  } catch {
-    // Cookie bukan JSON, pakai langsung sebagai string
-    const raw = getCookie('tahun');
-    if (raw && /^\d{4}$/.test(raw)) return raw;
-    toast.error('Format cookie tahun tidak valid');
-  }
-  return String(new Date().getFullYear());
-}
 
 interface IndikatorState {
   indikator: string;
@@ -107,7 +93,7 @@ export const FormAddChildModal: React.FC<FormAddChildModalProps> = ({
         body: JSON.stringify(payload),
       });
       toast.success('Data berhasil ditambahkan');
-      onSuccess({ ...res.data, childs: [] });
+      onSuccess({ ...res.data.data, childs: [] });
     } catch (error) {
       const code = (error as Error & { code?: number }).code;
       const message = error instanceof Error ? error.message : 'Terjadi kesalahan';

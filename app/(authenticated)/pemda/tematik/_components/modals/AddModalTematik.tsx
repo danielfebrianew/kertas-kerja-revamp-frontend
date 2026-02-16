@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { fetchApi } from '@/lib/fetcher';
 import { toast } from 'sonner';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { getTahunFromCookie } from '@/lib/cookie';
 
 interface IndikatorState {
   nama_indikator: string;
@@ -15,19 +15,6 @@ interface AddModalTematikProps {
   onSuccess: () => void;
 }
 
-function getTahunFromCookie(): string {
-  try {
-    const raw = getCookie('tahun');
-    if (!raw) return String(new Date().getFullYear());
-    const parsed = JSON.parse(raw);
-    return typeof parsed === 'object' ? parsed.value || '' : String(parsed);
-  } catch {
-    const raw = getCookie('tahun');
-    if (raw && /^\d{4}$/.test(raw)) return raw;
-    toast.error('Format cookie tahun tidak valid');
-  }
-  return String(new Date().getFullYear());
-}
 
 export default function AddModalTematik({ onCancel, onSuccess }: AddModalTematikProps) {
   const tahun = getTahunFromCookie();
