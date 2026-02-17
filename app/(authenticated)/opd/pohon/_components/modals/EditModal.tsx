@@ -93,7 +93,7 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
     try {
       const res = await fetchApi<{ data: { id: number; nama_pohon?: string; tema?: string; keterangan: string; jenis_pohon: string; level_pohon: number; is_active: boolean; jumlah_review: number; tagging: string | null } }>(`/pohon_kinerja_admin/update/${node.id}`, {
         method: 'PUT',
-        body: JSON.stringify(payload),
+        body: payload,
       });
       toast.success('Data berhasil diperbarui');
       onSuccess({

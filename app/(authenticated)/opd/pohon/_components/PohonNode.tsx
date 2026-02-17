@@ -11,13 +11,12 @@ import { Loader2 } from 'lucide-react';
 interface PohonNodeProps {
   node: PohonKinerja;
   onTreeRefresh?: () => void;
-  onDeleteAction?: (nodeId: number) => void;
+  onDeleteAction?: (nodeId: number, namaPohon: string) => void;
   isRoot?: boolean;
+  forceExpand?: boolean;
 }
 
 const getButtonColor = (jenisPohon: string) => {
-  if (jenisPohon === 'Strategic Pemda')
-    return 'border-primary text-primary hover:bg-primary hover:text-primary-foreground';
   if (jenisPohon === 'Super Sub Tematik')
     return 'border-destructive text-destructive hover:bg-destructive hover:text-white';
   return 'border-green-600 text-green-600 hover:bg-green-600 hover:text-white';
@@ -28,6 +27,7 @@ const PohonNode: React.FC<PohonNodeProps> = ({
   onTreeRefresh,
   onDeleteAction,
   isRoot = false,
+  forceExpand = false,
 }) => {
   const [nodeData, setNodeData] = useState(node);
   const styles = getPohonStyle(nodeData.level_pohon);
@@ -35,6 +35,9 @@ const PohonNode: React.FC<PohonNodeProps> = ({
   const hasChildren = nodeData.childs && nodeData.childs.length > 0;
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [collapsedByUser, setCollapsedByUser] = useState(false);
+  const isEffectivelyExpanded = collapsedByUser ? false : (isExpanded || forceExpand);
+
   const [addModalInfo, setAddModalInfo] = useState<ChildInfo | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isEditLoading, setIsEditLoading] = useState(false);
@@ -44,10 +47,22 @@ const PohonNode: React.FC<PohonNodeProps> = ({
     setNodeData(node);
   }, [node]);
 
-  const handleToggleExpand = () => setIsExpanded(!isExpanded);
+  useEffect(() => {
+    if (!forceExpand) setCollapsedByUser(false);
+  }, [forceExpand]);
+
+  const handleToggleExpand = () => {
+    if (isEffectivelyExpanded) {
+      setIsExpanded(false);
+      setCollapsedByUser(true);
+    } else {
+      setCollapsedByUser(false);
+      setIsExpanded(true);
+    }
+  };
 
   const getLabelTampilkan = () => {
-    if (isExpanded) return isRoot ? 'Sembunyikan Anak' : 'Sembunyikan';
+    if (isEffectivelyExpanded) return isRoot ? 'Sembunyikan Anak' : 'Sembunyikan';
     return isRoot ? 'Tampilkan Anak' : 'Tampilkan';
   };
 
@@ -161,7 +176,7 @@ const PohonNode: React.FC<PohonNodeProps> = ({
 
                 {/* Tombol Hapus tetap sama */}
                 <button
-                  onClick={() => onDeleteAction && onDeleteAction(nodeData.id)}
+                  onClick={() => onDeleteAction && onDeleteAction(nodeData.id, nodeData.nama_pohon)}
                   className="px-2 py-1 whitespace-nowrap flex justify-center items-center border-2 border-destructive hover:bg-destructive text-destructive hover:text-white rounded-md transition-colors"
                 >
                   <IconDelete /> Hapus
@@ -195,7 +210,7 @@ const PohonNode: React.FC<PohonNodeProps> = ({
                     onClick={handleToggleExpand}
                     className="px-2 py-1 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors"
                   >
-                    {isExpanded ? <IconEyeOff /> : <IconEye />}
+                    {isEffectivelyExpanded ? <IconEyeOff /> : <IconEye />}
                     <span className="font-semibold">{getLabelTampilkan()}</span>
                   </button>
                 )}
@@ -220,9 +235,9 @@ const PohonNode: React.FC<PohonNodeProps> = ({
       )}
 
       {/* Children & Add form */}
-      {!isAddingChild && (isExpanded || addModalInfo) && (hasChildren || addModalInfo) && (
+      {!isAddingChild && (isEffectivelyExpanded || addModalInfo) && (hasChildren || addModalInfo) && (
         <ul>
-          {isExpanded &&
+          {isEffectivelyExpanded &&
             hasChildren &&
             nodeData.childs!.map((child) => (
               <PohonNode

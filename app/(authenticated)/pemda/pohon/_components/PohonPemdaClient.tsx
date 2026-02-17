@@ -81,7 +81,8 @@ export default function PohonPemdaClient() {
       const res = await fetchApi<PohonPemdaResponse>(
         `/pohon_kinerja_admin/tematik/${selectedId}`
       );
-      setPohonData(res.data ? [mapPohonResponse(res.data as unknown as Record<string, unknown>)] : []);
+      const node = res.data?.data;
+      setPohonData(node ? [mapPohonResponse(node as unknown as Record<string, unknown>)] : []);
     } catch (err) {
       console.error('Failed to fetch pohon:', err);
     } finally {

@@ -3,8 +3,7 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { fetchApi } from '@/lib/fetcher';
 import { toast } from 'sonner';
-import type { PohonKinerja } from '@/types/PohonPemda';
-import type { PohonOpdResponse, TujuanOpd } from '@/types/PohonOpd';
+import type { PohonOpdResponse, PohonOpdNode, TujuanOpd } from '@/types/PohonOpd';
 import {
   Card,
   CardContent,
@@ -12,13 +11,13 @@ import {
 import { Building2, Loader2 } from 'lucide-react';
 import { FilterHeader } from '@/components/filter-header';
 import PohonNode from './PohonNode';
-import { IconAdd, IconCetak } from '@/components/ui/icons';
+import { IconAdd, IconCetak, IconEye, IconEyeOff } from '@/components/ui/icons';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { useConfirm } from '@/components/ui/confirm-dialog';
 import { getCookieValue, getCookieLabel } from '@/lib/cookie';
 import '../treeflex.css';
 
-function mapPohonResponse(node: Record<string, unknown>): PohonKinerja {
+function mapPohonResponse(node: Record<string, unknown>): PohonOpdNode {
   const { tema, childs, ...rest } = node;
   return {
     ...rest,
@@ -26,7 +25,7 @@ function mapPohonResponse(node: Record<string, unknown>): PohonKinerja {
     childs: Array.isArray(childs)
       ? (childs as Record<string, unknown>[]).map(mapPohonResponse)
       : undefined,
-  } as PohonKinerja;
+  } as PohonOpdNode;
 }
 
 export default function PohonOpdClient() {
@@ -35,9 +34,10 @@ export default function PohonOpdClient() {
   const [namaOpd, setNamaOpd] = useState(() => getCookieLabel('opd'));
 
   const confirm = useConfirm();
-  const [pohonData, setPohonData] = useState<PohonKinerja[]>([]);
+  const [pohonData, setPohonData] = useState<PohonOpdNode[]>([]);
   const [tujuanOpd, setTujuanOpd] = useState<TujuanOpd[]>([]);
   const [loading, setLoading] = useState(!!tahun && !!kodeOpd);
+  const [expandAll, setExpandAll] = useState(false);
   const fetchedRef = useRef<string | null>(null);
 
   const fetchKey = `${kodeOpd}/${tahun}`;
@@ -50,14 +50,14 @@ export default function PohonOpdClient() {
     }
     try {
       setLoading(true);
-      const res = await fetchApi<PohonOpdResponse['data']>(
+      const res = await fetchApi<PohonOpdResponse>(
         `/pohon_kinerja_opd/findall/${kodeOpd}/${tahun}`
       );
-      setNamaOpd(res.data?.nama_opd || namaOpd);
-      setTujuanOpd(res.data?.tujuan_opd ?? []);
-      const childs = res.data?.childs ?? [];
+      setNamaOpd(res.data?.data?.nama_opd || namaOpd);
+      setTujuanOpd(res.data?.data?.tujuan_opd ?? []);
+      const childs = res.data?.data?.childs ?? [];
       setPohonData(
-        childs.map((c: any) => mapPohonResponse(c as unknown as Record<string, unknown>))
+        childs.map((c) => mapPohonResponse(c as unknown as Record<string, unknown>))
       );
     } catch (err) {
       console.error('Failed to fetch pohon OPD:', err);
@@ -81,8 +81,10 @@ export default function PohonOpdClient() {
     setNamaOpd(getCookieLabel('opd'));
   };
 
-  const handleDeleteNode = async (nodeId: number) => {
-    const confirmed = await confirm();
+  const handleDeleteNode = async (nodeId: number, namaPohon: string) => {
+    const confirmed = await confirm({
+      message: `Data Pohon "${namaPohon}" dan seluruh anaknya akan ikut terhapus. Anda Yakin?`,
+    });
     if (!confirmed) return;
     try {
       await fetchApi(`/pohon_kinerja_admin/delete/${nodeId}`, { method: 'DELETE' });
@@ -202,10 +204,11 @@ export default function PohonOpdClient() {
                               <div className="flex gap-3 justify-evenly my-4 hide-on-capture text-xs">
                                 <button
                                   type="button"
+                                  onClick={() => setExpandAll((prev) => !prev)}
                                   className="px-2 py-1 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors"
                                 >
-                                  <IconAdd />
-                                  <span className="font-semibold">Tampilkan Semua</span>
+                                  {expandAll ? <IconEyeOff /> : <IconEye />}
+                                  <span className="font-semibold">{expandAll ? 'Sembunyikan Semua' : 'Tampilkan Semua'}</span>
                                 </button>
                                 <button
                                   type="button"
@@ -220,7 +223,7 @@ export default function PohonOpdClient() {
                         </div>
 
                         {/* Tree Children */}
-                        {pohonData.length > 0 && (
+                        {pohonData.length > 0 && expandAll && (
                           <ul>
                             {pohonData.map((node) => (
                               <PohonNode

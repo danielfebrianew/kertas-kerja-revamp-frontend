@@ -33,7 +33,7 @@ export interface PohonKinerja {
 export interface PohonPemdaResponse {
   code: number;
   status: string;
-  data: PohonKinerja;
+  data: PohonKinerja | null;
 }
 
 // === Tematik List Types ===
