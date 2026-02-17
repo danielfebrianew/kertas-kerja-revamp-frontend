@@ -50,7 +50,7 @@ export async function fetchApi<T = any>(
     token = urlOrParams.token;
     web = urlOrParams.web;
   }
-  const baseURL = process.env.SITE_URL;
+  const baseURL = process.env.NEXT_PUBLIC_API_URL || process.env.SITE_URL;
   const headers = new Headers();
 
   const isFormData = body instanceof FormData;

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard,
   TreePine,
@@ -13,7 +14,7 @@ import {
   TreePalmIcon,
   DatabaseIcon,
 } from 'lucide-react';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { getCookie, deleteCookie } from 'cookies-next';
 
 // 1. Tambahkan SidebarTrigger ke dalam import
 import {
@@ -71,9 +72,10 @@ export function AppSidebar() {
     } catch { /* ignore */ }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     deleteCookie('bearer_token');
     deleteCookie('user');
+    await signOut({ redirect: false });
     router.push('/');
   };
 

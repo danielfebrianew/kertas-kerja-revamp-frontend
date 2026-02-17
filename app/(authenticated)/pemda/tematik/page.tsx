@@ -1,14 +1,17 @@
-import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 import TematikClient from './_components/TematikClient';
 
-export default async function PemdaTematikPage() {
-  const session: any = await getServerSession(authOptions);
-
-  if (!session?.accessToken) {
-    redirect('/');
-  }
-
-  return <TematikClient />;
+export default function PemdaTematikPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center px-6 py-20">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      }
+    >
+      <TematikClient />
+    </Suspense>
+  );
 }

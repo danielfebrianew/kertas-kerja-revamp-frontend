@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,8 +16,7 @@ import {
 } from '@/components/ui/card';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
-import { decodeJwt } from '@/lib/jwt';
+import { setCookie } from 'cookies-next';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,27 +32,27 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://api-ekak.zeabur.app/user/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+      const result = await signIn('credentials', {
+        username,
+        password,
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+      if (result?.error) {
+        throw new Error(result.error);
       }
 
-      if (data.data?.token) {
-        const token = data.data.token;
-        const user = decodeJwt(token);
+      if (result?.ok) {
+        // Get the token from the session and save to cookies for backward compatibility
+        const response = await fetch('/api/auth/session');
+        const session = await response.json();
 
-        setCookie('bearer_token', token);
-        setCookie('user', JSON.stringify(user));
+        if (session?.accessToken) {
+          setCookie('bearer_token', session.accessToken);
+          setCookie('user', JSON.stringify(session.user));
+        }
+
         router.push('/dashboard');
-      } else {
-        throw new Error('No token received');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

@@ -37,10 +37,11 @@ function TematikContent() {
         const res = await fetchApi<TematikPemdaResponse>(
           `/tematik_pemda/${tahun}`
         );
-        setTematikList(res.data.data.tematiks ?? []);
+        setTematikList(res.data?.data?.tematiks ?? []);
       } catch (err) {
         console.error('Failed to fetch tematik:', err);
         toast.error('Gagal memuat data tematik');
+        setTematikList([]);
       } finally {
         setLoading(false);
       }

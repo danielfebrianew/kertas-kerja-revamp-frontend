@@ -2,6 +2,12 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt"
+  },
+
+  secret: process.env.NEXTAUTH_SECRET,
+
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -9,75 +15,84 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
-        // TODO: Implement your authentication logic here
-        // This is a placeholder that should be replaced with actual authentication
-        if (!credentials?.username || !credentials?.password) {
-          return null;
-        }
 
-        // Example: Call your backend API to validate credentials
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) return null;
+
+        const { username, password } = credentials;
+
         try {
-          const response = await fetch(`${process.env.SITE_URL}/auth/login`, {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.SITE_URL;
+          const response = await fetch(`${apiUrl}/user/login`, {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              username: credentials.username,
-              password: credentials.password,
-            }),
+              username,
+              password
+            })
           });
 
           if (!response.ok) {
-            return null;
+            const error = await response.json();
+            throw new Error(error?.message || "Login failed");
           }
 
-          const user = await response.json();
+          const result = await response.json();
 
-          // Return user object with accessToken
-          if (user && user.accessToken) {
+          // Response dari backend: { data: { token: "jwt_token" } }
+          if (result.data?.token) {
+            // Decode JWT untuk mendapatkan user info
+            const token = result.data.token;
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(
+              atob(base64)
+                .split('')
+                .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+            );
+            const userPayload = JSON.parse(jsonPayload);
+
             return {
-              id: user.id || user.username,
-              name: user.name || user.username,
-              email: user.email,
-              accessToken: user.accessToken,
+              id: userPayload.user_id?.toString() || username,
+              email: userPayload.email,
+              accessToken: token,
+              user: userPayload
             };
           }
 
           return null;
         } catch (error) {
           console.error("Authentication error:", error);
-          return null;
+          throw error;
         }
-      },
-    }),
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      // Add accessToken to the token right after signin
-      if (user) {
-        token.accessToken = (user as any).accessToken;
-        token.id = user.id;
       }
+    })
+  ],
+
+  callbacks: {
+    async jwt({ token, user }: any) {
+      if (user) {
+        token.accessToken = user.accessToken;
+        token.user = user.user;
+      }
+
       return token;
     },
-    async session({ session, token }) {
-      // Send properties to the client
-      (session as any).accessToken = token.accessToken;
-      if (session.user) {
-        session.user.id = token.id as string;
-      }
+
+    async session({ session, token }: any) {
+      session.accessToken = token.accessToken as string;
+      session.user = token.user;
+
       return session;
-    },
+    }
   },
+
   pages: {
-    signIn: "/", // Customize sign-in page
-  },
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+    signIn: "/"
+  }
 };
 
 const handler = NextAuth(authOptions);

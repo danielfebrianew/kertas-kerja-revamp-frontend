@@ -60,9 +60,10 @@ export default function PohonPemdaClient() {
         const res = await fetchApi<TematikResponse>(
           `/pohon_kinerja/tematik/${tahun}`
         );
-        setTematikList(res.data.data ?? []);
+        setTematikList(res.data?.data ?? []);
       } catch (err) {
         console.error('Failed to fetch tematik:', err);
+        setTematikList([]);
       } finally {
         setTematikLoading(false);
       }
@@ -207,9 +208,9 @@ export default function PohonPemdaClient() {
                   <div className="overflow-x-auto py-8 flex justify-center w-full">
                     <div className="tf-tree tf-gap-sm">
                       <ul>
-                        {pohonData.map((node) => (
+                        {pohonData.map((node, idx) => (
                           <PohonNode
-                            key={node.id}
+                            key={node.id ?? idx}
                             node={node}
                             onTreeRefresh={fetchPohonData}
                             onDeleteAction={handleDeleteNode}
