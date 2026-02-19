@@ -11,6 +11,9 @@ import {
 import { Building2, Loader2 } from 'lucide-react';
 import { FilterHeader } from '@/components/filter-header';
 import PohonNode from './PohonNode';
+import { FormAddChildModal } from './modals/AddModal';
+import { AddTujuanOpdModal } from './modals/AddTujuanOpdModal';
+import type { ChildInfo } from '../_utils';
 import { IconAdd, IconCetak, IconEye, IconEyeOff } from '@/components/ui/icons';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { useConfirm } from '@/components/ui/confirm-dialog';
@@ -38,7 +41,12 @@ export default function PohonOpdClient() {
   const [tujuanOpd, setTujuanOpd] = useState<TujuanOpd[]>([]);
   const [loading, setLoading] = useState(!!tahun && !!kodeOpd);
   const [expandAll, setExpandAll] = useState(false);
+  const [addModalInfo, setAddModalInfo] = useState<ChildInfo | null>(null);
+  const [isAddingChild, setIsAddingChild] = useState(false);
+  const [showTujuanModal, setShowTujuanModal] = useState(false);
   const fetchedRef = useRef<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const rootNodeRef = useRef<HTMLDivElement>(null);
 
   const fetchKey = `${kodeOpd}/${tahun}`;
 
@@ -79,6 +87,28 @@ export default function PohonOpdClient() {
     setTahun(newTahun);
     setKodeOpd(newKodeOpd);
     setNamaOpd(getCookieLabel('opd'));
+  };
+
+  const handleToggleExpandAll = () => {
+    const container = scrollContainerRef.current;
+    const rootNode = rootNodeRef.current;
+    if (container && rootNode) {
+      const rootRect = rootNode.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const rootVisualX = rootRect.left - containerRect.left;
+
+      setExpandAll((prev) => !prev);
+
+      requestAnimationFrame(() => {
+        const newRootOffsetFromContainerLeft =
+          rootNode.getBoundingClientRect().left -
+          container.getBoundingClientRect().left +
+          container.scrollLeft;
+        container.scrollLeft = newRootOffsetFromContainerLeft - rootVisualX;
+      });
+    } else {
+      setExpandAll((prev) => !prev);
+    }
   };
 
   const handleDeleteNode = async (nodeId: number, namaPohon: string) => {
@@ -126,12 +156,12 @@ export default function PohonOpdClient() {
           ) : (
             <Card className="mt-6">
               <CardContent>
-                <div className="overflow-x-auto py-8 flex justify-center w-full">
-                  <div className="tf-tree tf-gap-sm">
+                <div ref={scrollContainerRef} className="overflow-x-auto py-8 w-full">
+                  <div className="tf-tree tf-gap-sm w-fit mx-auto">
                     <ul>
                       <li>
                         {/* Root OPD Node */}
-                        <div className="tf-nc tf flex flex-col rounded-lg shadow-lg border-primary max-w-sm relative">
+                        <div ref={rootNodeRef} className="tf-nc tf flex flex-col rounded-lg shadow-lg border-primary min-w-[384px] max-w-sm relative">
                           {/* Header */}
                           <div className="flex flex-col rounded-lg shadow-sm mb-2 border p-3 border-primary bg-primary text-primary-foreground">
                             <span className="text-xs text-center font-bold uppercase">
@@ -181,38 +211,36 @@ export default function PohonOpdClient() {
                             </table>
 
                             {/* Action Buttons */}
-                            <div className="flex-wrap">
-                              <div className="flex gap-3 justify-evenly my-4 hide-on-capture text-xs">
-                                <button
-                                  type="button"
-                                  className="px-2 py-1 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-                                >
-                                  <IconAdd /> Tambah Tujuan OPD
-                                </button>
-                              </div>
+                            <div className="flex flex-col gap-3 my-4 hide-on-capture text-xs">
+                              <button
+                                type="button"
+                                onClick={() => setShowTujuanModal(true)}
+                                className="w-full px-2 py-2 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                              >
+                                <IconAdd /> Tambah Tujuan OPD
+                              </button>
 
-                              <div className="flex gap-3 justify-evenly my-4 hide-on-capture text-xs">
-                                <button
-                                  type="button"
-                                  className="px-3 py-1 flex justify-center items-center whitespace-nowrap bg-gradient-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white rounded-md transition-all shadow-sm"
-                                >
-                                  <IconCetak />
-                                  <span className="font-semibold">Cetak Penuh Pohon Kinerja</span>
-                                </button>
-                              </div>
+                              <button
+                                type="button"
+                                className="w-full px-3 py-2 flex justify-center items-center whitespace-nowrap bg-gradient-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white rounded-md transition-all shadow-sm"
+                              >
+                                <IconCetak />
+                                <span className="font-semibold">Cetak Penuh Pohon Kinerja</span>
+                              </button>
 
-                              <div className="flex gap-3 justify-evenly my-4 hide-on-capture text-xs">
+                              <div className="flex gap-3">
                                 <button
                                   type="button"
-                                  onClick={() => setExpandAll((prev) => !prev)}
-                                  className="px-2 py-1 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors"
+                                  onClick={handleToggleExpandAll}
+                                  className="flex-1 px-2 py-2 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors"
                                 >
                                   {expandAll ? <IconEyeOff /> : <IconEye />}
-                                  <span className="font-semibold">{expandAll ? 'Sembunyikan Semua' : 'Tampilkan Semua'}</span>
+                                  <span className="font-semibold">{expandAll ? 'Sembunyikan Semua' : 'Tampilkan'}</span>
                                 </button>
                                 <button
                                   type="button"
-                                  className="px-2 py-1 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-destructive text-destructive hover:bg-destructive hover:text-white transition-colors"
+                                  onClick={() => setAddModalInfo({ nextLevel: 4, nextJenis: 'Strategic Pemda', label: 'Strategic Pemda' })}
+                                  className="flex-1 px-2 py-2 whitespace-nowrap flex justify-center rounded-md items-center bg-card border-2 border-destructive text-destructive hover:bg-destructive hover:text-white transition-colors"
                                 >
                                   <IconAdd />
                                   <span className="font-semibold">Strategic</span>
@@ -222,10 +250,24 @@ export default function PohonOpdClient() {
                           </div>
                         </div>
 
-                        {/* Tree Children */}
-                        {pohonData.length > 0 && expandAll && (
+                        {/* Spinner saat menambahkan child */}
+                        {isAddingChild && (
                           <ul>
-                            {pohonData.map((node) => (
+                            <li>
+                              <div className="tf-nc tf rounded-lg shadow-lg border-border min-w-[384px] max-w-sm relative" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '120px' }}>
+                                <div className="flex flex-col items-center gap-2">
+                                  <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                                  <p className="text-xs text-muted-foreground">Menambahkan data...</p>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        )}
+
+                        {/* Tree Children & Add form */}
+                        {!isAddingChild && (expandAll || addModalInfo) && (pohonData.length > 0 || addModalInfo) && (
+                          <ul>
+                            {expandAll && pohonData.map((node) => (
                               <PohonNode
                                 key={node.id}
                                 node={node}
@@ -234,6 +276,29 @@ export default function PohonOpdClient() {
                                 isRoot
                               />
                             ))}
+
+                            {addModalInfo && (
+                              <li ref={(el) => {
+                                if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 100);
+                              }}>
+                                <div className="tf-nc" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+                                  <FormAddChildModal
+                                    parentId={0}
+                                    childInfo={addModalInfo}
+                                    onCancel={() => setAddModalInfo(null)}
+                                    onSuccess={() => {
+                                      setAddModalInfo(null);
+                                      setIsAddingChild(true);
+                                      setTimeout(() => {
+                                        setIsAddingChild(false);
+                                        setExpandAll(true);
+                                        fetchPohonData();
+                                      }, 500);
+                                    }}
+                                  />
+                                </div>
+                              </li>
+                            )}
                           </ul>
                         )}
                       </li>
@@ -244,6 +309,16 @@ export default function PohonOpdClient() {
             </Card>
           )}
         </>
+      )}
+      {showTujuanModal && (
+        <AddTujuanOpdModal
+          kodeOpd={kodeOpd}
+          onCancel={() => setShowTujuanModal(false)}
+          onSuccess={() => {
+            setShowTujuanModal(false);
+            fetchPohonData();
+          }}
+        />
       )}
     </div>
   );

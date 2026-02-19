@@ -2,7 +2,7 @@
 
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import type { TematikPemdaItem } from '@/types/tematik';
+import type { TematikPemdaItem } from '@/types/Tematik';
 
 interface TematikTableProps {
   data: TematikPemdaItem[];
