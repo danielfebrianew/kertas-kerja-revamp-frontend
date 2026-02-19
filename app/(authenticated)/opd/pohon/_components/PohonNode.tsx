@@ -69,7 +69,7 @@ const PohonNode: React.FC<PohonNodeProps> = ({
   return (
     <li>
       {isEditLoading ? (
-        <div className="tf-nc tf rounded-lg shadow-lg border-border max-w-sm min-w-[320px] relative" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
+        <div className="tf-nc tf rounded-lg shadow-lg border-border max-w-sm min-w-[384px] relative" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
             <p className="text-xs text-muted-foreground">Memuat form edit...</p>
@@ -88,7 +88,7 @@ const PohonNode: React.FC<PohonNodeProps> = ({
         </div>
       ) : (
         <div
-          className={`tf-nc tf flex flex-col rounded-lg shadow-lg ${styles.card} max-w-sm relative`}
+          className={`tf-nc tf flex flex-col rounded-lg shadow-lg ${styles.card} min-w-[384px] max-w-sm relative`}
         >
           {/* Header */}
           <div

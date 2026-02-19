@@ -1,11 +1,9 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { fetchApi } from '@/lib/fetcher';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import type { TematikItem, PohonKinerja, TematikResponse, PohonPemdaResponse } from '@/types/PohonPemda';
+import type { TematikItem, PohonKinerja } from '@/types/PohonPemda';
 import {
   Card,
   CardContent,
@@ -15,99 +13,38 @@ import {
 import { TreePine, ChevronDown, Loader2 } from 'lucide-react';
 import { FilterHeader } from '@/components/filter-header';
 import PohonNode from './PohonNode';
-import { getTahunFromCookie } from '@/lib/cookie';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { useConfirm } from '@/components/ui/confirm-dialog';
+import { deletePohonNode } from '../_actions';
 import '../treeflex.css';
 
-function mapPohonResponse(node: Record<string, unknown>): PohonKinerja {
-  const { tema, childs, ...rest } = node;
-  return {
-    ...rest,
-    nama_pohon: (node.nama_pohon as string) ?? (tema as string) ?? '',
-    childs: Array.isArray(childs)
-      ? (childs as Record<string, unknown>[]).map(mapPohonResponse)
-      : undefined,
-  } as PohonKinerja;
+interface PohonPemdaClientProps {
+  initialTematik: TematikItem[];
+  initialPohon: PohonKinerja[];
+  tahun: string;
+  selectedId: string;
 }
 
-export default function PohonPemdaClient() {
-  const searchParams = useSearchParams();
+export default function PohonPemdaClient({
+  initialTematik,
+  initialPohon,
+  tahun,
+  selectedId,
+}: PohonPemdaClientProps) {
   const router = useRouter();
-
-  const [tahun, setTahun] = useState(() => getTahunFromCookie());
-  const selectedId = searchParams.get('id') ?? '';
-
   const confirm = useConfirm();
-  const [tematikList, setTematikList] = useState<TematikItem[]>([]);
-  const [pohonData, setPohonData] = useState<PohonKinerja[]>([]);
-  const [loading, setLoading] = useState(!!selectedId);
-  const [tematikLoading, setTematikLoading] = useState(!!tahun);
-  const tematikFetchedRef = useRef<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch tematik when tahun changes
-  useEffect(() => {
-    if (!tahun) {
-      setTematikList([]);
-      return;
-    }
-    if (tematikFetchedRef.current === tahun) return;
-    tematikFetchedRef.current = tahun;
-
-    async function fetchTematik() {
-      try {
-        setTematikLoading(true);
-        const res = await fetchApi<TematikResponse>(
-          `/pohon_kinerja/tematik/${tahun}`
-        );
-        setTematikList(res.data?.data ?? []);
-      } catch (err) {
-        console.error('Failed to fetch tematik:', err);
-        setTematikList([]);
-      } finally {
-        setTematikLoading(false);
-      }
-    }
-    fetchTematik();
-  }, [tahun]);
-
-  const fetchPohonData = useCallback(async () => {
-    if (!selectedId) {
-      setPohonData([]);
-      return;
-    }
-    try {
-      setLoading(true);
-      const res = await fetchApi<PohonPemdaResponse>(
-        `/pohon_kinerja_admin/tematik/${selectedId}`
-      );
-      const node = res.data?.data;
-      setPohonData(node ? [mapPohonResponse(node as unknown as Record<string, unknown>)] : []);
-    } catch (err) {
-      console.error('Failed to fetch pohon:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedId]);
-
-  useEffect(() => {
-    fetchPohonData();
-  }, [fetchPohonData]);
-
-  const handleActivate = (newTahun: string) => {
-    tematikFetchedRef.current = null;
-    setTahun(newTahun);
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('id');
-    router.push(`?${params.toString()}`);
+  const handleActivate = (_newTahun: string) => {
+    // Cookie is set by FilterHeader; navigate without id to refresh server data
+    router.push('?');
+    router.refresh();
   };
 
   const handleSelect = (id: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
     if (id) {
       params.set('id', id);
-    } else {
-      params.delete('id');
     }
     router.push(`?${params.toString()}`);
   };
@@ -116,13 +53,24 @@ export default function PohonPemdaClient() {
     const confirmed = await confirm();
     if (!confirmed) return;
     try {
-      await fetchApi(`/pohon_kinerja_admin/delete/${nodeId}`, { method: 'DELETE' });
-      toast.success('Node berhasil dihapus');
-      fetchPohonData();
+      setLoading(true);
+      const result = await deletePohonNode(nodeId);
+      if (result.success) {
+        toast.success(result.message);
+        router.refresh();
+      } else {
+        toast.error(result.message);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Gagal menghapus node';
       toast.error(message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleTreeRefresh = () => {
+    router.refresh();
   };
 
   return (
@@ -162,28 +110,21 @@ export default function PohonPemdaClient() {
             </CardHeader>
             <CardContent>
               <div className="relative max-w-sm justify-center w-full mx-auto ">
-                {tematikLoading ? (
-                  <div className="flex items-center gap-2 text-sm text-primary-foreground/70 ">
-                    <Loader2 className="size-4 animate-spin" />
-                    Memuat data tematik...
-                  </div>
-                ) : (
-                  <div className="relative flex justify-center w-full">
-                    <select
-                      value={selectedId}
-                      onChange={(e) => handleSelect(e.target.value)}
-                      className="w-full appearance-none rounded-md border border-background/20 bg-background px-3 py-2 pr-10 text-sm text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent"
-                    >
-                      <option value="" className="bg-background text-primary">Pilih Tematik</option>
-                      {tematikList.map((item) => (
-                        <option key={item.id} value={item.id} className="bg-background text-primary">
-                          {item.nama_pohon}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-primary" />
-                  </div>
-                )}
+                <div className="relative flex justify-center w-full">
+                  <select
+                    value={selectedId}
+                    onChange={(e) => handleSelect(e.target.value)}
+                    className="w-full appearance-none rounded-md border border-background/20 bg-background px-3 py-2 pr-10 text-sm text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent"
+                  >
+                    <option value="" className="bg-background text-primary">Pilih Tematik</option>
+                    {initialTematik.map((item) => (
+                      <option key={item.id} value={item.id} className="bg-background text-primary">
+                        {item.nama_pohon}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-primary" />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -198,7 +139,7 @@ export default function PohonPemdaClient() {
                       <p className="text-sm">Memuat pohon kinerja...</p>
                     </div>
                   </div>
-                ) : pohonData.length === 0 ? (
+                ) : initialPohon.length === 0 ? (
                   <div className="flex items-center justify-center py-20">
                     <div className="flex flex-col items-center gap-3 text-muted-foreground">
                       <TreePine className="size-10 opacity-40" />
@@ -209,11 +150,11 @@ export default function PohonPemdaClient() {
                   <div className="overflow-x-auto py-8 flex justify-center w-full">
                     <div className="tf-tree tf-gap-sm">
                       <ul>
-                        {pohonData.map((node, idx) => (
+                        {initialPohon.map((node, idx) => (
                           <PohonNode
                             key={node.id ?? idx}
                             node={node}
-                            onTreeRefresh={fetchPohonData}
+                            onTreeRefresh={handleTreeRefresh}
                             onDeleteAction={handleDeleteNode}
                             isRoot
                           />
@@ -226,7 +167,7 @@ export default function PohonPemdaClient() {
             </Card>
           )}
 
-          {!selectedId && !tematikLoading && (
+          {!selectedId && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <TreePine className="mb-4 size-14 text-muted-foreground/30" />
               <p className="font-display text-lg font-medium text-muted-foreground">
