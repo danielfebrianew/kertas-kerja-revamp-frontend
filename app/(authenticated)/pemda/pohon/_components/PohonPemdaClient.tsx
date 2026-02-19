@@ -96,10 +96,8 @@ export default function PohonPemdaClient({
       {/* Content when tahun is active */}
       {tahun && (
         <>
-          <div className="mt-6 mb-6 text-center">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">
-              Pohon Kinerja Pemda
-            </h2>
+          <div className="mt-3 mb-3 text-center">
+
           </div>
 
           <Card className="mb-6 bg-primary text-primary-foreground border-primary">
