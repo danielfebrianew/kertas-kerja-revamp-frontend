@@ -40,6 +40,12 @@ const navGroups = [
     ],
   },
   {
+    label: 'Data Master',
+    items: [
+      { title: 'Master OPD', href: '/data-master/master-opd', icon: Building2 },
+    ],
+  },
+  {
     label: 'Pemda',
     items: [
       { title: 'Tematik', href: '/pemda/tematik', icon: DatabaseIcon },
