@@ -39,6 +39,7 @@ export default function EditModalTematik({ tematikId, onCancel, onSuccess }: Edi
           `/pohon_kinerja_admin/detail/${tematikId}`
         );
         const data = res.data.data;
+        if (!data) return;
         const nama = data.nama_pohon ?? (data as unknown as Record<string, unknown>).tema as string ?? '';
 
         setNamaPohon(nama);
