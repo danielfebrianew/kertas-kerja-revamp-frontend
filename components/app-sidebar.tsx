@@ -9,7 +9,9 @@ import {
   LayoutDashboard,
   TreePine,
   Palette,
+  Building,
   Building2,
+  User,
   LogOut,
   TreePalmIcon,
   DatabaseIcon,
@@ -42,7 +44,9 @@ const navGroups = [
   {
     label: 'Data Master',
     items: [
+      { title: 'Master Lembaga', href: '/data-master/master-lembaga', icon: Building },
       { title: 'Master OPD', href: '/data-master/master-opd', icon: Building2 },
+      { title: 'Master Role', href: '/data-master/master-role', icon: User },
     ],
   },
   {

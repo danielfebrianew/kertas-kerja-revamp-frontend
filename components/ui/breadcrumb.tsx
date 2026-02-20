@@ -12,7 +12,9 @@ const labelMap: Record<string, string> = {
   pohonOpd: 'Pohon Kinerja OPD',
   tematik: 'Tematik',
   'data-master': 'Data Master',
+  'master-lembaga': 'Master Lembaga',
   'master-opd': 'Master OPD',
+  'master-role' : 'Master Role',
 };
 
 export function Breadcrumb() {
