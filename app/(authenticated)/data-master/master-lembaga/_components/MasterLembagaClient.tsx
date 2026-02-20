@@ -50,7 +50,7 @@ export default function MasterLembagaClient() {
 
       const mapped: MasterLembagaItem[] = list.map((item) => ({
         id: item.id,
-        id_lembaga: item.id, // ⬅️ untuk kolom tabel
+        id_lembaga: item.id, // untuk kolom tabel
         nama_lembaga: item.nama_lembaga,
         kode_lembaga: item.kode_lembaga,
         is_active: item.is_active,
@@ -103,68 +103,72 @@ export default function MasterLembagaClient() {
   };
 
   return (
-    <div className="px-6 py-6 md:px-10">
+    <>
       <FilterHeader onActivate={handleActivate} />
-      <Breadcrumb />
-
-      {!tahun && (
-        <div className="mt-10 flex flex-col items-center justify-center py-20 text-center">
-          <Landmark className="mb-4 size-14 text-muted-foreground/30" />
-          <p className="font-display text-lg font-medium text-muted-foreground">
-            PILIH TAHUN DI HEADER TERLEBIH DAHULU
-          </p>
+      <div className="px-2">
+        <div className="px-2">
+          <Breadcrumb />
         </div>
-      )}
 
-      {tahun && (
-        <>
-          <div className="mt-6 mb-6 flex items-center justify-between">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">
-              Master Lembaga
-            </h2>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md font-bold text-sm transition"
-            >
-              <Plus className="size-4" />
-              Tambah Lembaga
-            </button>
+        {!tahun && (
+          <div className="mt-10 flex flex-col items-center justify-center py-20 text-center">
+            <Landmark className="mb-4 size-14 text-muted-foreground/30" />
+            <p className="font-display text-lg font-medium text-muted-foreground">
+              PILIH TAHUN DI HEADER TERLEBIH DAHULU
+            </p>
           </div>
+        )}
 
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        {tahun && (
+          <>
+            <div className="mt-2 mb-3 flex items-center justify-between">
+              <h2 className="font-display text-2xl font-semibold tracking-tight px-2">
+                Master Lembaga
+              </h2>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md font-bold text-sm transition"
+              >
+                <Plus className="size-4" />
+                Tambah Lembaga
+              </button>
             </div>
-          ) : (
-            <MasterLembagaTable
-              data={masterLembagaList}
-              onEdit={setEditId}
-              onDelete={handleDelete}
-            />
-          )}
 
-          {showAddModal && (
-            <AddMasterLembaga
-              onCancel={() => setShowAddModal(false)}
-              onSuccess={() => {
-                setShowAddModal(false);
-                fetchMasterLembaga();
-              }}
-            />
-          )}
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="size-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <MasterLembagaTable
+                data={masterLembagaList}
+                onEdit={setEditId}
+                onDelete={handleDelete}
+              />
+            )}
 
-          {editId && (
-            <EditMasterLembaga
-              idLembaga={editId}
-              onCancel={() => setEditId(null)}
-              onSuccess={() => {
-                setEditId(null);
-                fetchMasterLembaga();
-              }}
-            />
-          )}
-        </>
-      )}
-    </div>
+            {showAddModal && (
+              <AddMasterLembaga
+                onCancel={() => setShowAddModal(false)}
+                onSuccess={() => {
+                  setShowAddModal(false);
+                  fetchMasterLembaga();
+                }}
+              />
+            )}
+
+            {editId && (
+              <EditMasterLembaga
+                idLembaga={editId}
+                onCancel={() => setEditId(null)}
+                onSuccess={() => {
+                  setEditId(null);
+                  fetchMasterLembaga();
+                }}
+              />
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }

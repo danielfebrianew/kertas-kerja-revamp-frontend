@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, Shield, Loader2 } from 'lucide-react';
 import type { OPD, OPDResponse } from '@/types/opd';
 import { getCookie, setCookie } from 'cookies-next';
+import { toast } from 'sonner';
 
 interface FilterHeaderProps {
   onActivate?: (tahun: string, kodeOpd: string) => void;
@@ -87,77 +88,86 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
       })
     );
 
+    const namaOpd = opdItem?.nama_opd ?? selectedOpd;
+    toast.success(`OPD ${namaOpd} (${selectedTahun}) berhasil diaktifkan`);
+
     onActivate?.(selectedTahun, selectedOpd);
   };
 
   return (
-    <div className="flex flex-wrap items-end gap-3 rounded-lg bg-primary px-4 py-4 text-primary-foreground">
-      {/* OPD Select */}
-      <div className="min-w-[180px] flex-1">
-        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-primary-foreground/70">
-          Pilih OPD:
-        </label>
-        {opdLoading ? (
-          <div className="flex h-9 items-center gap-2 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-3 text-sm text-primary-foreground/70">
-            <Loader2 className="size-3.5 animate-spin" />
-            Memuat...
-          </div>
-        ) : (
-          <div className="relative">
+    <nav className="flex w-full items-center border-b bg-white py-3 px-6 md:px-10">
+
+      {/* Center group */}
+      <div className="flex flex-1 items-center justify-center gap-4">
+
+        {/* OPD Select */}
+        <div className="flex items-center gap-2">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            OPD:
+          </label>
+          {opdLoading ? (
+            <div className="flex h-8 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500">
+              <Loader2 className="size-3.5 animate-spin" />
+              Memuat...
+            </div>
+          ) : (
+            <div className="relative w-[240px]">
+              <select
+                value={selectedOpd}
+                onChange={(e) => setSelectedOpd(e.target.value)}
+                className="w-full appearance-none rounded-md border border-slate-300 bg-white px-3 py-1.5 pr-8 text-sm font-medium text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+              >
+                <option value="">Pilih OPD ...</option>
+                {opdList.map((opd) => (
+                  <option key={opd.kode_opd} value={opd.kode_opd}>
+                    {opd.nama_opd}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+            </div>
+          )}
+        </div>
+
+        {/* Tahun Select */}
+        <div className="flex items-center gap-2">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            Tahun:
+          </label>
+          <div className="relative w-[130px]">
             <select
-              value={selectedOpd}
-              onChange={(e) => setSelectedOpd(e.target.value)}
-              className="w-full appearance-none rounded-md border border-background/80 bg-background px-3 py-2 pr-10 text-sm text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent hover:bg-background/80"
+              value={selectedTahun}
+              onChange={(e) => setSelectedTahun(e.target.value)}
+              className="w-full appearance-none rounded-md border border-slate-300 bg-white px-3 py-1.5 pr-8 text-sm font-medium text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
             >
-              <option value="" className="bg-background text-primary">Pilih OPD ...</option>
-              {opdList.map((opd) => (
-                <option key={opd.kode_opd} value={opd.kode_opd} className="bg-background text-primary">
-                  {opd.nama_opd}
+              <option value="">Pilih Tahun ...</option>
+              {TAHUN_OPTIONS.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-primary" />
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
           </div>
-        )}
-      </div>
-
-      {/* Tahun Select */}
-      <div className="min-w-[140px]">
-        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-primary-foreground/70">
-          Pilih Tahun:
-        </label>
-        <div className="relative">
-          <select
-            value={selectedTahun}
-            onChange={(e) => setSelectedTahun(e.target.value)}
-            className="w-full appearance-none rounded-md border border-background/80 bg-background px-3 py-2 pr-10 text-sm text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent hover:bg-background/80"
-          >
-            <option value="" className="bg-background text-primary">Pilih Tahun ...</option>
-            {TAHUN_OPTIONS.map((t) => (
-              <option key={t.value} value={t.value} className="bg-background text-primary">
-                {t.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-primary" />
         </div>
+
+        {/* Aktifkan Button */}
+        <Button
+          size="sm"
+          onClick={handleActivate}
+          className="h-8 bg-slate-900 text-white hover:bg-slate-800"
+        >
+          Aktifkan
+        </Button>
+
+        {/* Super Admin Badge */}
+        <div className="flex h-8 items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 text-xs font-medium text-slate-600">
+          <Shield className="size-3.5" />
+          Super Admin
+        </div>
+
       </div>
 
-      {/* Aktifkan Button */}
-      <Button
-        size="sm"
-        onClick={handleActivate}
-        className="h-9 bg-background text-primary font-medium hover:bg-background/80 transition-colors border-primary-foreground/20"
-        disabled={!selectedOpd || !selectedTahun}
-      >
-        Aktifkan
-      </Button>
-
-      {/* Super Admin Badge */}
-      <div className="ml-auto flex h-9 items-center gap-1.5 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 hover:bg-primary/20 px-3 text-sm font-medium text-primary-foreground">
-        <Shield className="size-3.5" />
-        Super Admin
-      </div>
-    </div>
+    </nav>
   );
 }

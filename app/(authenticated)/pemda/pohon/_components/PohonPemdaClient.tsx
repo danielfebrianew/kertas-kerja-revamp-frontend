@@ -74,11 +74,13 @@ export default function PohonPemdaClient({
   };
 
   return (
-    <div className="px-6 py-6 md:px-10">
-      {/* Filter Header */}
+    <>
       <FilterHeader onActivate={handleActivate} />
+      <div className="px-2">
 
-      <Breadcrumb />
+      <div className='px-2'>
+        <Breadcrumb />
+      </div>
 
       {/* No tahun selected */}
       {!tahun && (
@@ -145,7 +147,7 @@ export default function PohonPemdaClient({
                     </div>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto py-8 flex justify-center w-full">
+                  <div className="overflow-x-auto flex justify-center w-full">
                     <div className="tf-tree tf-gap-sm">
                       <ul>
                         {initialPohon.map((node, idx) => (
@@ -179,5 +181,6 @@ export default function PohonPemdaClient({
         </>
       )}
     </div>
+    </>
   );
 }

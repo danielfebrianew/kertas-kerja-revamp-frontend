@@ -8,13 +8,13 @@ const labelMap: Record<string, string> = {
   dashboard: 'Dashboard',
   pemda: 'Pemda',
   opd: 'OPD',
-  pohonPemda: 'Pohon Kinerja Pemda',
-  pohonOpd: 'Pohon Kinerja OPD',
+  'pemda/pohon': 'Pohon Kinerja Pemda',
+  'opd/pohon': 'Pohon Kinerja OPD',
   tematik: 'Tematik',
   'data-master': 'Data Master',
   'master-lembaga': 'Master Lembaga',
   'master-opd': 'Master OPD',
-  'master-role' : 'Master Role',
+  'master-role': 'Master Role',
 };
 
 export function Breadcrumb() {
@@ -23,7 +23,14 @@ export function Breadcrumb() {
 
   const crumbs = segments.map((segment, index) => {
     const href = '/' + segments.slice(0, index + 1).join('/');
-    const label = labelMap[segment] ?? segment;
+
+    const prevSegment = segments[index - 1];
+    const combinedPath = prevSegment ? `${prevSegment}/${segment}` : null;
+    
+    const label = (combinedPath && labelMap[combinedPath])
+      ? labelMap[combinedPath]
+      : (labelMap[segment] ?? segment);
+
     const isLast = index === segments.length - 1;
     return { href, label, isLast };
   });

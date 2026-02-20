@@ -7,18 +7,17 @@ import { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard,
-  TreePine,
-  Palette,
   Building,
   Building2,
   User,
   LogOut,
-  TreePalmIcon,
   DatabaseIcon,
+  TreePine,
+  TreeDeciduous,
+  ChevronRight,
 } from 'lucide-react';
 import { getCookie, deleteCookie } from 'cookies-next';
 
-// 1. Tambahkan SidebarTrigger ke dalam import
 import {
   Sidebar,
   SidebarContent,
@@ -30,11 +29,34 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
-const navGroups = [
+import type { LucideIcon } from 'lucide-react';
+
+type NavItem = {
+  title: string;
+  icon: LucideIcon;
+} & (
+  | { href: string; children?: never }
+  | { href?: never; children: { title: string; href: string; icon: LucideIcon }[] }
+);
+
+type NavGroup = {
+  label: string;
+  items: NavItem[];
+};
+
+const navGroups: NavGroup[] = [
   {
     label: 'Overview',
     items: [
@@ -44,22 +66,40 @@ const navGroups = [
   {
     label: 'Data Master',
     items: [
-      { title: 'Master Lembaga', href: '/data-master/master-lembaga', icon: Building },
-      { title: 'Master OPD', href: '/data-master/master-opd', icon: Building2 },
-      { title: 'Master Role', href: '/data-master/master-role', icon: User },
+      {
+        title: 'Data Master',
+        icon: DatabaseIcon,
+        children: [
+          { title: 'Master Lembaga', href: '/data-master/master-lembaga', icon: Building },
+          { title: 'Master OPD', href: '/data-master/master-opd', icon: Building2 },
+          { title: 'Master Role', href: '/data-master/master-role', icon: User },
+        ],
+      },
     ],
   },
   {
     label: 'Pemda',
     items: [
-      { title: 'Tematik', href: '/pemda/tematik', icon: DatabaseIcon },
-      { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon', icon: TreePine },
+      {
+        title: 'Pemda',
+        icon: Building,
+        children: [
+          { title: 'Tematik', href: '/pemda/tematik', icon: DatabaseIcon },
+          { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon', icon: TreePine },
+        ],
+      },
     ],
   },
   {
     label: 'OPD',
     items: [
-      { title: 'Pohon Kinerja OPD', href: '/opd/pohon', icon: TreePalmIcon },
+      {
+        title: 'OPD',
+        icon: Building2,
+        children: [
+          { title: 'Pohon Kinerja OPD', href: '/opd/pohon', icon: TreeDeciduous },
+        ],
+      },
     ],
   },
 ];
@@ -125,6 +165,61 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
+                  if (item.children) {
+                    const isGroupActive = item.children.some(
+                      (child) => pathname === child.href
+                    );
+                    return (
+                      <Collapsible
+                        key={item.title}
+                        defaultOpen={isGroupActive}
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton>
+                              <item.icon />
+                              <span>{item.title}</span>
+                              <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub className="ml-4 border-none gap-0 space-y-0 pl-0 py-0">
+                              {item.children.map((child, index) => {
+                                const isLast = index === item.children.length - 1;
+                                return (
+                                  <SidebarMenuSubItem
+                                    key={child.href}
+                                    className="relative flex items-center py-1"
+                                  >
+                                    {/* Garis vertikal: penuh untuk item biasa, setengah atas untuk item terakhir */}
+                                    <div
+                                      className={`absolute left-0 w-px border-l border-sidebar-border/50 ${
+                                        isLast ? 'top-0 h-1/2' : 'top-0 h-full'
+                                      }`}
+                                    />
+                                    {/* Garis horizontal */}
+                                    <div className="absolute left-0 top-1/2 h-px w-4 border-t border-sidebar-border/50" />
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={pathname === child.href}
+                                      className="ml-4"
+                                    >
+                                      <Link href={child.href}>
+                                        <child.icon className="size-4" />
+                                        <span>{child.title}</span>
+                                      </Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                );
+                              })}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    );
+                  }
+
                   const isActive = pathname === item.href;
                   return (
                     <SidebarMenuItem key={item.href}>

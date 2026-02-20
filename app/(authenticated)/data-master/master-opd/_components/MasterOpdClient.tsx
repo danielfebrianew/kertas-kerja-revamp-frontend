@@ -100,60 +100,64 @@ function MasterOpdContent() {
   };
 
   return (
-    <div className="px-6 py-6 md:px-10">
+    <>
       <FilterHeader />
+      <div className="px-2">
+        <div className="px-2">
+          <Breadcrumb />
+        </div>
 
-      <Breadcrumb />
 
-      <div className="mt-6 mb-6 flex items-center justify-between">
-        <h2 className="font-display text-2xl font-semibold tracking-tight">Master OPD</h2>
-        <button
-          type="button"
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md font-bold text-sm transition"
-        >
-          <Plus className="size-4" />
-          Tambah OPD
-        </button>
-      </div>
+        <div className="mt-2 mb-3 flex items-center justify-between">
+          <h2 className="font-display text-2xl font-semibold tracking-tight px-2">Master OPD</h2>
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md font-bold text-sm transition"
+          >
+            <Plus className="size-4" />
+            Tambah OPD
+          </button>
+        </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="flex flex-col items-center gap-3 text-muted-foreground">
-            <Loader2 className="size-6 animate-spin" />
-            <p className="text-sm">Memuat data Master OPD...</p>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+              <Loader2 className="size-6 animate-spin" />
+              <p className="text-sm">Memuat data Master OPD...</p>
+            </div>
           </div>
-        </div>
-      ) : masterOpdData.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Building2 className="mb-4 size-14 text-muted-foreground/30" />
-          <p className="text-sm text-muted-foreground">Tidak ada data Master OPD.</p>
-        </div>
-      ) : (
-        <MasterOpdTable data={masterOpdData} onEdit={setEditItem} onDelete={handleDelete} />
-      )}
+        ) : masterOpdData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Building2 className="mb-4 size-14 text-muted-foreground/30" />
+            <p className="text-sm text-muted-foreground">Tidak ada data Master OPD.</p>
+          </div>
+        ) : (
+          <MasterOpdTable data={masterOpdData} onEdit={setEditItem} onDelete={handleDelete} />
+        )}
 
-      {showAddModal && (
-        <AddModalMasterOpd
-          onCancel={() => setShowAddModal(false)}
-          onSuccess={() => {
-            setShowAddModal(false);
-            void fetchMasterOpd();
-          }}
-        />
-      )}
+        {showAddModal && (
+          <AddModalMasterOpd
+            onCancel={() => setShowAddModal(false)}
+            onSuccess={() => {
+              setShowAddModal(false);
+              void fetchMasterOpd();
+            }}
+          />
+        )}
 
-      {editItem && (
-        <EditModalMasterOpd
-          item={editItem}
-          onCancel={() => setEditItem(null)}
-          onSuccess={() => {
-            setEditItem(null);
-            void fetchMasterOpd();
-          }}
-        />
-      )}
-    </div>
+        {editItem && (
+          <EditModalMasterOpd
+            item={editItem}
+            onCancel={() => setEditItem(null)}
+            onSuccess={() => {
+              setEditItem(null);
+              void fetchMasterOpd();
+            }}
+          />
+        )}
+      </div>
+    </>
   );
 }
 

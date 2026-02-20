@@ -91,10 +91,12 @@ function TematikContent() {
   };
 
   return (
-    <div className="px-6 py-6 md:px-10">
+    <>
       <FilterHeader onActivate={handleActivate} />
-
-      <Breadcrumb />
+      <div className="px-2">
+        <div className="px-2">
+          <Breadcrumb />
+        </div>
 
       {!tahun && (
         <div className="mt-10 flex flex-col items-center justify-center py-20 text-center">
@@ -110,8 +112,8 @@ function TematikContent() {
 
       {tahun && (
         <>
-          <div className="mt-6 mb-6 flex items-center justify-between">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">
+          <div className="mt-2 mb-3 flex items-center justify-between">
+            <h2 className="font-display text-2xl font-semibold tracking-tight px-2">
               Tematik Pemda{' '}
               <span className="text-muted-foreground font-normal text-lg">({tahun})</span>
             </h2>
@@ -167,7 +169,8 @@ function TematikContent() {
           )}
         </>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

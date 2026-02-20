@@ -61,15 +61,16 @@ const handleDelete = async (item: MasterRoleItem) => {
   }
 };
 
-
-
   return (
-    <div className="px-6 py-6 md:px-10">
+    <>
       <FilterHeader />
-      <Breadcrumb />
+      <div className="px-2">
+        <div className="px-2">
+          <Breadcrumb />
+        </div>
 
-      <div className="mt-6 mb-6 flex items-center justify-between">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">
+      <div className="mt-2 mb-3 flex items-center justify-between">
+            <h2 className="font-display text-2xl font-semibold tracking-tight px-2">
               Master Role
             </h2>
             <button
@@ -109,6 +110,7 @@ const handleDelete = async (item: MasterRoleItem) => {
           }}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }

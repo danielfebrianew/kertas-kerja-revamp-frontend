@@ -127,10 +127,13 @@ export default function PohonOpdClient() {
   };
 
   return (
-    <div className="px-6 py-6 md:px-10">
+    <>
       <FilterHeader onActivate={handleActivate} />
-
-      <Breadcrumb />
+      <div className="px-2">
+        <div className="px-2">
+          <Breadcrumb />
+        </div>
+      </div>
 
       {(!tahun || !kodeOpd) && (
         <div className="mt-10 flex flex-col items-center justify-center py-20 text-center">
@@ -156,7 +159,7 @@ export default function PohonOpdClient() {
           ) : (
             <Card className="mt-6">
               <CardContent>
-                <div ref={scrollContainerRef} className="overflow-x-auto py-8 w-full">
+                <div ref={scrollContainerRef} className="overflow-x-auto w-full">
                   <div className="tf-tree tf-gap-sm w-fit mx-auto">
                     <ul>
                       <li>
@@ -320,6 +323,6 @@ export default function PohonOpdClient() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
