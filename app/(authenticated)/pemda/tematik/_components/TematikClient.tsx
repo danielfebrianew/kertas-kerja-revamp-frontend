@@ -4,7 +4,7 @@ import { Suspense, useRef, useState, useEffect } from 'react';
 import AddModalTematik from './modals/AddModalTematik';
 import EditModalTematik from './modals/EditModalTematik';
 import { fetchApi } from '@/lib/fetcher';
-import type { TematikPemdaItem, TematikPemdaResponse } from '@/types/Tematik';
+import type { TematikPemdaItem, TematikPemdaResponse } from '@/types/tematik';
 import { FilterHeader } from '@/components/filter-header';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Loader2, Palette, Plus } from 'lucide-react';

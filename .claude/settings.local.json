@@ -15,7 +15,8 @@
       "Bash(head:*)",
       "Bash(grep:*)",
       "Bash(pnpm build:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git mv:*)"
     ]
   }
 }
