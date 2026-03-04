@@ -75,7 +75,8 @@ export default function AddModalTematik({ onCancel, onSuccess }: AddModalTematik
     };
 
     try {
-      await fetchApi('/pohon_kinerja_admin/create', {
+      await fetchApi({ type: 'auth', 
+        url: '/pohon_kinerja_admin/create',
         method: 'POST',
         body: JSON.stringify(payload),
       });

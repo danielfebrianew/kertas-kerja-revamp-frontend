@@ -43,7 +43,7 @@ export default function MasterLembagaClient() {
   const fetchMasterLembaga = async () => {
     setLoading(true);
 
-    const response = await fetchApi<ApiResponse>('/lembaga/findall');
+    const response = await fetchApi<ApiResponse>({ type: 'auth',  method: 'GET',  url: '/lembaga/findall' });
 
     if (response.status >= 200 && response.status < 300) {
       const list = response.data?.data ?? [];
@@ -81,9 +81,7 @@ export default function MasterLembagaClient() {
 
     if (!ok) return;
 
-    const response = await fetchApi(`/lembaga/delete/${idLembaga}`, {
-      method: 'DELETE',
-    });
+    const response = await fetchApi({ type: 'auth',  url: `/lembaga/delete/${idLembaga}`, method: 'DELETE' });
 
     if (response.status >= 200 && response.status < 300) {
       toast.success('Data lembaga berhasil dihapus');
@@ -125,13 +123,13 @@ export default function MasterLembagaClient() {
               <h2 className="font-display text-2xl font-semibold tracking-tight px-2">
                 Master Lembaga
               </h2>
-              <button
+              {/* <button
                 onClick={() => setShowAddModal(true)}
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md font-bold text-sm transition"
               >
                 <Plus className="size-4" />
                 Tambah Lembaga
-              </button>
+              </button> */}
             </div>
 
             {loading ? (

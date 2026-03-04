@@ -29,7 +29,8 @@ export default function EditMasterRole({ selectedRole, onCancel, onSuccess }: Ed
 
     try {
       setIsLoading(true);
-      const res = await fetchApi(`/role/update/${selectedRole.id}`, {
+      const res = await fetchApi({ type: 'auth', 
+        url: `/role/update/${selectedRole.id}`,
         method: 'PUT',
         body: { role: role.trim() },
       });

@@ -51,7 +51,7 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
     async function fetchOPD() {
       try {
         setOpdLoading(true);
-        const res = await fetchApi<OPDResponse>('/opd/findall');
+        const res = await fetchApi<OPDResponse>({ type: 'auth',  method: 'GET',  url: '/opd/findall' });
         const data = res.data?.data;
         setOpdList(Array.isArray(data) ? data : []);
       } catch (err) {

@@ -68,12 +68,12 @@ export default function MasterLembagaTable({
           >
             Edit
           </button>
-          <button
+          {/* <button
             onClick={() => onDelete(params.row.id_lembaga)}
             className="w-full px-3 py-1.5 bg-rose-600 text-white rounded-md text-xs font-medium"
           >
             Hapus
-          </button>
+          </button> */}
         </div>
       ),
     },

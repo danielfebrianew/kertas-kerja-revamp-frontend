@@ -88,8 +88,10 @@ export const FormAddChildModal: React.FC<FormAddChildModalProps> = ({
     };
 
     try {
-      const res = await fetchApi<{ data: PohonKinerja }>('/pohon_kinerja_admin/create', {
+      const res = await fetchApi<{ data: PohonKinerja }>({
+        url: '/pohon_kinerja_admin/create',
         method: 'POST',
+        type: 'auth',
         body: payload,
       });
       toast.success('Data berhasil ditambahkan');

@@ -41,9 +41,7 @@ function MasterOpdContent() {
   const fetchMasterOpd = async () => {
     try {
       setLoading(true);
-      const response = await fetchApi<OPDResponse>('/opd/findall', {
-        method: 'GET',
-      });
+      const response = await fetchApi<OPDResponse>({ type: 'auth',  method: 'GET',  url: '/opd/findall' });
 
       if (response.status >= 400) {
         const error = new Error(response.message || 'Gagal memuat data Master OPD') as Error & { code?: number };
@@ -80,9 +78,7 @@ function MasterOpdContent() {
     if (!confirmed) return;
 
     try {
-      const response = await fetchApi(`/opd/delete/${item.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetchApi({ type: 'auth',  url: `/opd/delete/${item.id}`, method: 'DELETE' });
 
       if (response.status >= 400) {
         const error = new Error(response.message || 'Gagal menghapus Master OPD') as Error & { code?: number };

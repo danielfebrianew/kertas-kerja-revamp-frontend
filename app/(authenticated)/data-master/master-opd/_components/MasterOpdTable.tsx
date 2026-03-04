@@ -96,16 +96,16 @@ export default function MasterOpdTable({ data, onEdit, onDelete }: MasterOpdTabl
         <div className="py-4 whitespace-normal break-words text-center">{params.row.pangkat_kepala_perangkat_daerah}</div>
       ),
     },
-    {
-      field: 'kode_lembaga',
-      headerName: 'Kode Lembaga',
-      width: 140,
-      align: 'center',
-      headerAlign: 'center',
-      renderCell: (params) => (
-        <div className="py-4 whitespace-normal break-words text-center">{params.row.kode_lembaga}</div>
-      ),
-    },
+    // {
+    //   field: 'kode_lembaga',
+    //   headerName: 'Kode Lembaga',
+    //   width: 140,
+    //   align: 'center',
+    //   headerAlign: 'center',
+    //   renderCell: (params) => (
+    //     <div className="py-4 whitespace-normal break-words text-center">{params.row.kode_lembaga}</div>
+    //   ),
+    // },
     {
       field: 'aksi',
       headerName: 'Aksi',

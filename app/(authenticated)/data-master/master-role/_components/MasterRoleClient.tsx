@@ -22,7 +22,7 @@ export default function MasterRoleClient() {
   const fetchRoles = async () => {
     try {
       setLoading(true);
-      const response = await fetchApi<MasterRoleFindAllResponse>('/role/findall');
+      const response = await fetchApi<MasterRoleFindAllResponse>({ type: 'auth',  method: 'GET',  url: '/role/findall' });
       if (response.status >= 400) {
         throw new Error(response.data?.status || 'Gagal memuat data role');
       }
@@ -48,9 +48,7 @@ const handleDelete = async (item: MasterRoleItem) => {
 
   if (!ok) return;
 
-  const response = await fetchApi(`/role/delete/${item.id}`, {
-    method: 'DELETE',
-  });
+  const response = await fetchApi({ type: 'auth',  url: `/role/delete/${item.id}`, method: 'DELETE' });
 
   if (response.status >= 200 && response.status < 300) {
     toast.success('Role berhasil dihapus');

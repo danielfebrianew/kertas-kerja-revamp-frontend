@@ -18,7 +18,8 @@ export default function AddMasterLembaga({ onCancel, onSuccess }: AddMasterLemba
     e.preventDefault();
     setIsLoading(true);
 
-    const response = await fetchApi('/lembaga/create', {
+    const response = await fetchApi({ type: 'auth', 
+      url: '/lembaga/create',
       method: 'POST',
       body: {
         nama_lembaga: namaLembaga,

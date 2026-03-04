@@ -81,7 +81,7 @@ const navGroups: NavGroup[] = [
     label: 'Pemda',
     items: [
       {
-        title: 'Pemda',
+        title: 'Perencanaan Pemda',
         icon: Building,
         children: [
           { title: 'Tematik', href: '/pemda/tematik', icon: DatabaseIcon },
@@ -94,7 +94,7 @@ const navGroups: NavGroup[] = [
     label: 'OPD',
     items: [
       {
-        title: 'OPD',
+        title: 'Perencanaan OPD',
         icon: Building2,
         children: [
           { title: 'Pohon Kinerja OPD', href: '/opd/pohon', icon: TreeDeciduous },

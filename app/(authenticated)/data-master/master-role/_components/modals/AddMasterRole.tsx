@@ -23,7 +23,8 @@ export default function AddMasterRole({ onCancel, onSuccess }: AddMasterRoleProp
 
     try {
       setIsLoading(true);
-      const res = await fetchApi('/role/create', {
+      const res = await fetchApi({ type: 'auth', 
+        url: '/role/create',
         method: 'POST',
         body: { role: role.trim() },
       });
