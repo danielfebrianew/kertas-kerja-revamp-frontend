@@ -47,9 +47,9 @@ type NavItem = {
   title: string;
   icon: LucideIcon;
 } & (
-  | { href: string; children?: never }
-  | { href?: never; children: { title: string; href: string; icon: LucideIcon }[] }
-);
+    | { href: string; children?: never }
+    | { href?: never; children: { title: string; href: string; icon: LucideIcon }[] }
+  );
 
 type NavGroup = {
   label: string;
@@ -84,8 +84,8 @@ const navGroups: NavGroup[] = [
         title: 'Perencanaan Pemda',
         icon: Building,
         children: [
-          { title: 'Tematik', href: '/pemda/tematik', icon: DatabaseIcon },
-          { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon', icon: TreePine },
+          { title: 'Tematik', href: '/pemda/tematik-pemda', icon: DatabaseIcon },
+          { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon-kinerja-pemda', icon: TreePine },
         ],
       },
     ],
@@ -97,7 +97,7 @@ const navGroups: NavGroup[] = [
         title: 'Perencanaan OPD',
         icon: Building2,
         children: [
-          { title: 'Pohon Kinerja OPD', href: '/opd/pohon', icon: TreeDeciduous },
+          { title: 'Pohon Kinerja OPD', href: '/opd/pohon-kinerja-opd', icon: TreeDeciduous },
         ],
       },
     ],
@@ -131,7 +131,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      
+
       {/* HEADER */}
       <SidebarHeader>
         <div className="relative flex w-full items-center justify-end px-2 group-data-[collapsible=icon]:justify-center">
@@ -194,9 +194,8 @@ export function AppSidebar() {
                                   >
                                     {/* Garis vertikal: penuh untuk item biasa, setengah atas untuk item terakhir */}
                                     <div
-                                      className={`absolute left-0 w-px border-l border-sidebar-border/50 ${
-                                        isLast ? 'top-0 h-1/2' : 'top-0 h-full'
-                                      }`}
+                                      className={`absolute left-0 w-px border-l border-sidebar-border/50 ${isLast ? 'top-0 h-1/2' : 'top-0 h-full'
+                                        }`}
                                     />
                                     {/* Garis horizontal */}
                                     <div className="absolute left-0 top-1/2 h-px w-4 border-t border-sidebar-border/50" />
