@@ -169,7 +169,7 @@ const PohonNode: React.FC<PohonNodeProps> = ({
                 </button>
 
                 {/* TOMBOL CETAK BARU */}
-                <button className="px-3 py-1 flex justify-center items-center whitespace-nowrap bg-gradient-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white rounded-md transition-all shadow-sm">
+                <button className="px-3 py-1 flex justify-center items-center whitespace-nowrap bg-linear-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white rounded-md transition-all shadow-sm">
                   <IconCetak />
                   <span className="font-semibold">Cetak</span>
                 </button>

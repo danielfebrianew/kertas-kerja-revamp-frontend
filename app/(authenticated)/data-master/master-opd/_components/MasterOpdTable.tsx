@@ -49,7 +49,7 @@ export default function MasterOpdTable({ data, onEdit, onDelete }: MasterOpdTabl
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => (
-        <div className="py-4 whitespace-normal break-words text-center">{params.row.kode_perangkat_daerah}</div>
+        <div className="py-4 whitespace-normal wrap-break-word text-center">{params.row.kode_perangkat_daerah}</div>
       ),
     },
     {
@@ -60,7 +60,7 @@ export default function MasterOpdTable({ data, onEdit, onDelete }: MasterOpdTabl
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => (
-        <div className="py-4 whitespace-normal break-words text-center">{params.row.nama_perangkat_daerah}</div>
+        <div className="py-4 whitespace-normal wrap-break-word text-center">{params.row.nama_perangkat_daerah}</div>
       ),
     },
     {
@@ -71,7 +71,7 @@ export default function MasterOpdTable({ data, onEdit, onDelete }: MasterOpdTabl
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => (
-        <div className="py-4 whitespace-normal break-words text-center">{params.row.nama_kepala_perangkat_daerah}</div>
+        <div className="py-4 whitespace-normal wrap-break-word text-center">{params.row.nama_kepala_perangkat_daerah}</div>
       ),
     },
     {
@@ -82,7 +82,7 @@ export default function MasterOpdTable({ data, onEdit, onDelete }: MasterOpdTabl
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => (
-        <div className="py-4 whitespace-normal break-words text-center">{params.row.nip_kepala_perangkat_daerah}</div>
+        <div className="py-4 whitespace-normal wrap-break-word text-center">{params.row.nip_kepala_perangkat_daerah}</div>
       ),
     },
     {
@@ -93,7 +93,7 @@ export default function MasterOpdTable({ data, onEdit, onDelete }: MasterOpdTabl
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => (
-        <div className="py-4 whitespace-normal break-words text-center">{params.row.pangkat_kepala_perangkat_daerah}</div>
+        <div className="py-4 whitespace-normal wrap-break-word text-center">{params.row.pangkat_kepala_perangkat_daerah}</div>
       ),
     },
     {
@@ -103,7 +103,7 @@ export default function MasterOpdTable({ data, onEdit, onDelete }: MasterOpdTabl
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => (
-        <div className="py-4 whitespace-normal break-words text-center">{params.row.kode_lembaga}</div>
+        <div className="py-4 whitespace-normal wrap-break-word text-center">{params.row.kode_lembaga}</div>
       ),
     },
     {

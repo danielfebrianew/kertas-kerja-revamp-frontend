@@ -111,7 +111,7 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
               Memuat...
             </div>
           ) : (
-            <div className="relative w-[240px]">
+            <div className="relative w-60">
               <select
                 value={selectedOpd}
                 onChange={(e) => setSelectedOpd(e.target.value)}
@@ -134,7 +134,7 @@ export function FilterHeader({ onActivate }: FilterHeaderProps) {
           <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
             Tahun:
           </label>
-          <div className="relative w-[130px]">
+          <div className="relative w-32.5">
             <select
               value={selectedTahun}
               onChange={(e) => setSelectedTahun(e.target.value)}
