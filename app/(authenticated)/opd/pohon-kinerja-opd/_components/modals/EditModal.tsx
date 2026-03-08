@@ -23,14 +23,20 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
   });
 
   const [indikators, setIndikators] = useState<
-    { id_indikator: string | null; nama_indikator: string; target: string; satuan: string; id_target: string | null }[]
+    {
+      id_indikator: string | null;
+      nama_indikator: string;
+      targets: { id_target: string | null; target: string; satuan: string }[];
+    }[]
   >(
     node.indikator?.map((ind: PohonIndikator) => ({
       id_indikator: ind.id_indikator,
       nama_indikator: ind.nama_indikator,
-      target: ind.targets?.[0]?.target || '',
-      satuan: ind.targets?.[0]?.satuan || '',
-      id_target: ind.targets?.[0]?.id_target || null,
+      targets: ind.targets?.map((t) => ({
+        id_target: t.id_target || null,
+        target: t.target || '',
+        satuan: t.satuan || '',
+      })) || [{ id_target: null, target: '', satuan: '' }],
     })) || []
   );
 
@@ -44,10 +50,18 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
     setIndikators(next);
   };
 
+  const handleTargetChange = (indIdx: number, targetIdx: number, field: string, value: string) => {
+    const next = [...indikators];
+    const targets = [...next[indIdx].targets];
+    targets[targetIdx] = { ...targets[targetIdx], [field]: value };
+    next[indIdx] = { ...next[indIdx], targets };
+    setIndikators(next);
+  };
+
   const addIndikator = () => {
     setIndikators([
       ...indikators,
-      { id_indikator: null, nama_indikator: '', target: '', satuan: '', id_target: null },
+      { id_indikator: null, nama_indikator: '', targets: [{ id_target: null, target: '', satuan: '' }] },
     ]);
   };
 
@@ -62,17 +76,18 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
     const tahun = getTahunFromCookie();
 
     const indikatorsPayload = indikators.map((ind) => {
-      const targetObj: Record<string, unknown> = {
-        target: ind.target,
-        satuan: ind.satuan,
-        tahun,
-      };
-      if (ind.id_target) targetObj.id_target = ind.id_target;
-
       const indikatorObj: Record<string, unknown> = {
         nama_indikator: ind.nama_indikator,
         tahun,
-        targets: [targetObj],
+        targets: ind.targets.map((t) => {
+          const targetObj: Record<string, unknown> = {
+            target: t.target,
+            satuan: t.satuan,
+            tahun,
+          };
+          if (t.id_target) targetObj.id_target = t.id_target;
+          return targetObj;
+        }),
       };
       if (ind.id_indikator) indikatorObj.id_indikator = ind.id_indikator;
 
@@ -111,12 +126,12 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
           id_indikator: ind.id_indikator || '',
           id_pokin: String(node.id),
           nama_indikator: ind.nama_indikator,
-          targets: [{
-            id_target: ind.id_target || '',
+          targets: ind.targets.map((t) => ({
+            id_target: t.id_target || '',
             indikator_id: ind.id_indikator || '',
-            target: ind.target,
-            satuan: ind.satuan,
-          }],
+            target: t.target,
+            satuan: t.satuan,
+          })),
         })),
       });
     } catch (error: unknown) {
@@ -171,28 +186,30 @@ export const FormEditNode: React.FC<FormEditNodeProps> = ({ node, onCancel, onSu
                   placeholder="Contoh: Meningkatnya..."
                 />
               </div>
-              <div className="flex gap-2">
-                <div className="w-1/3">
-                  <label className="text-[10px] font-semibold text-black">Target</label>
-                  <input
-                    type="text"
-                    value={ind.target}
-                    onChange={(e) => handleIndikatorChange(idx, 'target', e.target.value)}
-                    className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
-                    placeholder="Contoh: 100"
-                  />
+              {ind.targets.map((t, tIdx) => (
+                <div key={tIdx} className="flex gap-2">
+                  <div className="w-1/3">
+                    <label className="text-[10px] font-semibold text-black">Target</label>
+                    <input
+                      type="text"
+                      value={t.target}
+                      onChange={(e) => handleTargetChange(idx, tIdx, 'target', e.target.value)}
+                      className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
+                      placeholder="Contoh: 100"
+                    />
+                  </div>
+                  <div className="w-2/3">
+                    <label className="text-[10px] font-semibold text-black">Satuan</label>
+                    <input
+                      type="text"
+                      value={t.satuan}
+                      onChange={(e) => handleTargetChange(idx, tIdx, 'satuan', e.target.value)}
+                      className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
+                      placeholder="Contoh: Persen/Unit"
+                    />
+                  </div>
                 </div>
-                <div className="w-2/3">
-                  <label className="text-[10px] font-semibold text-black">Satuan</label>
-                  <input
-                    type="text"
-                    value={ind.satuan}
-                    onChange={(e) => handleIndikatorChange(idx, 'satuan', e.target.value)}
-                    className="w-full bg-white border border-input rounded p-1.5 focus:border-ring outline-none"
-                    placeholder="Contoh: Persen/Unit"
-                  />
-                </div>
-              </div>
+              ))}
               <button
                 type="button"
                 onClick={() => removeIndikator(idx)}

@@ -6,8 +6,8 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="flex justify-center py-20">
-          <Loader2 className="animate-spin" />
+        <div className="flex justify-center px-6 py-20">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
       }
     >

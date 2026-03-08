@@ -15,6 +15,7 @@ import {
   TreePine,
   TreeDeciduous,
   ChevronRight,
+  Trees,
 } from 'lucide-react';
 import { getCookie, deleteCookie } from 'cookies-next';
 
@@ -98,7 +99,8 @@ const navGroups: NavGroup[] = [
         title: 'Perencanaan OPD',
         icon: Building2,
         children: [
-          { title: 'Pohon Kinerja OPD', href: '/opd/pohon', icon: TreeDeciduous },
+          { title: 'Pohon Kinerja OPD', href: '/opd/pohon-kinerja-opd', icon: TreeDeciduous },
+          { title: 'Pohon Cascading', href: '/opd/pohon-cascading', icon: Trees },
         ],
       },
     ],
