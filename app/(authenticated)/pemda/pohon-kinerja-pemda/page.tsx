@@ -42,9 +42,9 @@ async function PohonPemdaLoader({
 
   if (tahun) {
     try {
-      const resTematik = await fetchApi<TematikResponse>(
-        `/pohon_kinerja/tematik/${tahun}`
-      );
+      const resTematik = await fetchApi<TematikResponse>({ type: 'auth',  method: 'GET', 
+        url: `/pohon_kinerja/tematik/${tahun}`,
+      });
       tematikList = resTematik.data?.data ?? [];
     } catch {
       tematikList = [];
@@ -53,9 +53,9 @@ async function PohonPemdaLoader({
 
   if (selectedId) {
     try {
-      const resPohon = await fetchApi<PohonPemdaResponse>(
-        `/pohon_kinerja_admin/tematik/${selectedId}`
-      );
+      const resPohon = await fetchApi<PohonPemdaResponse>({ type: 'auth',  method: 'GET', 
+        url: `/pohon_kinerja_admin/tematik/${selectedId}`,
+      });
       const node = resPohon.data?.data;
       pohonData = node
         ? [mapPohonResponse(node as unknown as Record<string, unknown>)]

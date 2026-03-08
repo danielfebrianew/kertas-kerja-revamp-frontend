@@ -4,18 +4,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { IconHome } from '@/components/ui/icons';
 
-const labelMap: Record<string, string> = {
-  dashboard: 'Dashboard',
-  pemda: 'Pemda',
-  opd: 'OPD',
-  'pemda/pohon': 'Pohon Kinerja Pemda',
-  'opd/pohon': 'Pohon Kinerja OPD',
-  tematik: 'Tematik',
-  'data-master': 'Data Master',
-  'master-lembaga': 'Master Lembaga',
-  'master-opd': 'Master OPD',
-  'master-role': 'Master Role',
-};
+// Function to convert path segments like "pohon-kinerja-pemda" to "Pohon Kinerja Pemda"
+function formatSegmentLabel(segment: string): string {
+  // Decode URI components in case there are encoded characters
+  const decodedSegment = decodeURIComponent(segment);
+  return decodedSegment
+    .split('-')
+    .map((word) => {
+      // Keep acronyms uppercase if needed, otherwise capitalize first letter
+      if (word.toLowerCase() === 'opd') return 'OPD';
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+}
 
 export function Breadcrumb() {
   const pathname = usePathname();
@@ -23,15 +24,9 @@ export function Breadcrumb() {
 
   const crumbs = segments.map((segment, index) => {
     const href = '/' + segments.slice(0, index + 1).join('/');
-
-    const prevSegment = segments[index - 1];
-    const combinedPath = prevSegment ? `${prevSegment}/${segment}` : null;
-    
-    const label = (combinedPath && labelMap[combinedPath])
-      ? labelMap[combinedPath]
-      : (labelMap[segment] ?? segment);
-
+    const label = formatSegmentLabel(segment);
     const isLast = index === segments.length - 1;
+
     return { href, label, isLast };
   });
 

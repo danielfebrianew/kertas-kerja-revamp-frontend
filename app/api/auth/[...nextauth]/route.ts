@@ -22,24 +22,19 @@ export const authOptions: NextAuthOptions = {
         const { username, password } = credentials;
 
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.SITE_URL;
-          const response = await fetch(`${apiUrl}/user/login`, {
+          const { fetchApi } = await import('@/lib/fetcher');
+          const apiResponse = await fetchApi({
+            url: "/user/login",
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              username,
-              password
-            })
+            type: "withoutAuth",
+            body: { username, password }
           });
 
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error?.message || "Login failed");
+          if (apiResponse.status !== 200 && apiResponse.status !== 201) {
+            throw new Error(apiResponse.data?.message || apiResponse.message || "Login failed");
           }
 
-          const result = await response.json();
+          const result = apiResponse.data;
 
           // Response dari backend: { data: { token: "jwt_token" } }
           if (result.data?.token) {

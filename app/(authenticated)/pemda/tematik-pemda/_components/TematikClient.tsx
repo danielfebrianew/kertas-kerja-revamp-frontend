@@ -34,9 +34,9 @@ function TematikContent() {
     async function fetchTematik() {
       try {
         setLoading(true);
-        const res = await fetchApi<TematikPemdaResponse>(
-          `/tematik_pemda/${tahun}`
-        );
+        const res = await fetchApi<TematikPemdaResponse>({ type: 'auth',  method: 'GET', 
+          url: `/tematik_pemda/${tahun}`,
+        });
         setTematikList(res.data?.data?.tematiks ?? []);
       } catch (err) {
         console.error('Failed to fetch tematik:', err);
@@ -53,7 +53,7 @@ function TematikContent() {
     if (!tahun) return;
     try {
       setLoading(true);
-      const res = await fetchApi<TematikPemdaResponse>(`/tematik_pemda/${tahun}`);
+      const res = await fetchApi<TematikPemdaResponse>({ type: 'auth',  method: 'GET',  url: `/tematik_pemda/${tahun}` });
       setTematikList(res.data.data.tematiks ?? []);
     } catch (err) {
       console.error('Failed to fetch tematik:', err);
@@ -80,7 +80,7 @@ function TematikContent() {
     const confirmed = await confirm({ title: 'Hapus?', message: 'Apakah Anda yakin ingin menghapus tematik ini?' });
     if (!confirmed) return;
     try {
-      await fetchApi(`/pohon_kinerja_admin/delete/${id}`, { method: 'DELETE' });
+      await fetchApi({ type: 'auth',  url: `/pohon_kinerja_admin/delete/${id}`, method: 'DELETE' });
       toast.success('Tematik berhasil dihapus');
       setTematikList((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {

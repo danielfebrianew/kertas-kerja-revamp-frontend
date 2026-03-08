@@ -51,10 +51,9 @@ export default function AddModalMasterOpd({
   useEffect(() => {
     async function fetchLembaga() {
       try {
-        const response = await fetchApi<LembagaResponse>(
-          '/lembaga/findall',
-          { method: 'GET' }
-        );
+        const response = await fetchApi<LembagaResponse>({ type: 'auth',  method: 'GET', 
+          url: '/lembaga/findall',
+        });
 
         if (response.status >= 400) {
           throw new Error(response.message || 'Gagal memuat lembaga');
@@ -98,9 +97,10 @@ export default function AddModalMasterOpd({
         id_lembaga: form.id_lembaga,
       };
 
-      const response = await fetchApi<CreateOpdResponse>('/opd/create', {
+      const response = await fetchApi<CreateOpdResponse>({ type: 'auth', 
+        url: '/opd/create',
         method: 'POST',
-        body: payload, // ❗ jangan stringify
+        body: payload,
       });
 
       if (response.status >= 400) {

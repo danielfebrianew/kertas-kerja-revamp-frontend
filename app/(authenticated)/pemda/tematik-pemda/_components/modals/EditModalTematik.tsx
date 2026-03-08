@@ -35,9 +35,9 @@ export default function EditModalTematik({ tematikId, onCancel, onSuccess }: Edi
     async function fetchDetail() {
       try {
         setFetchLoading(true);
-        const res = await fetchApi<PohonPemdaResponse>(
-          `/pohon_kinerja_admin/detail/${tematikId}`
-        );
+        const res = await fetchApi<PohonPemdaResponse>({ type: 'auth',  method: 'GET', 
+          url: `/pohon_kinerja_admin/detail/${tematikId}`,
+        });
         const data = res.data.data;
         if (!data) return;
         const nama = data.nama_pohon ?? (data as unknown as Record<string, unknown>).tema as string ?? '';
@@ -114,7 +114,8 @@ export default function EditModalTematik({ tematikId, onCancel, onSuccess }: Edi
     };
 
     try {
-      await fetchApi(`/pohon_kinerja_admin/update/${tematikId}`, {
+      await fetchApi({ type: 'auth', 
+        url: `/pohon_kinerja_admin/update/${tematikId}`,
         method: 'PUT',
         body: JSON.stringify(payload),
       });

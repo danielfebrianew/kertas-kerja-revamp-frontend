@@ -55,8 +55,8 @@ export const AddTujuanOpdModal: React.FC<AddTujuanOpdModalProps> = ({
       setLoadingDropdown(true);
       try {
         const [bidangRes, periodeRes] = await Promise.all([
-          fetchApi<{ data: BidangUrusan[] }>(`/bidang_urusan/findall/${kodeOpd}`),
-          fetchApi<{ data: Periode[] }>('/periode/findall'),
+          fetchApi<{ data: BidangUrusan[] }>({ type: 'auth', method: 'GET', url: `/bidang_urusan/findall/${kodeOpd}` }),
+          fetchApi<{ data: Periode[] }>({ type: 'auth', method: 'GET', url: '/periode/findall' }),
         ]);
         setBidangUrusanList(bidangRes.data?.data ?? []);
         setPeriodeList(periodeRes.data?.data ?? []);
@@ -136,7 +136,9 @@ export const AddTujuanOpdModal: React.FC<AddTujuanOpdModalProps> = ({
     };
 
     try {
-      await fetchApi('/tujuan_opd/create', {
+      await fetchApi({
+        type: 'auth',
+        url: '/tujuan_opd/create',
         method: 'POST',
         body: payload,
       });

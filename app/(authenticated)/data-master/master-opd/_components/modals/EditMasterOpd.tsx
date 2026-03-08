@@ -66,10 +66,9 @@ export default function EditModalMasterOpd({
   useEffect(() => {
     async function fetchLembaga() {
       try {
-        const response = await fetchApi<LembagaResponse>(
-          '/lembaga/findall',
-          { method: 'GET' }
-        );
+        const response = await fetchApi<LembagaResponse>({ type: 'auth',  method: 'GET', 
+          url: '/lembaga/findall',
+        });
 
         if (response.status >= 400) {
           throw new Error(response.message || 'Gagal memuat lembaga');
@@ -105,13 +104,11 @@ export default function EditModalMasterOpd({
         id_lembaga: form.id_lembaga,
       };
 
-      const response = await fetchApi<UpdateOpdResponse>(
-        `/opd/update/${item.id}`,
-        {
-          method: 'PUT',
-          body: payload, // ❗ jangan stringify
-        }
-      );
+      const response = await fetchApi<UpdateOpdResponse>({ type: 'auth', 
+        url: `/opd/update/${item.id}`,
+        method: 'PUT',
+        body: payload,
+      });
 
       if (response.status >= 400) {
         throw new Error(response.message || 'Gagal mengubah Master OPD');

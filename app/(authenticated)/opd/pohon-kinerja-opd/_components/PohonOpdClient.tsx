@@ -16,6 +16,7 @@ import { AddTujuanOpdModal } from './modals/AddTujuanOpdModal';
 import type { ChildInfo } from '../_utils';
 import { IconAdd, IconCetak, IconEye, IconEyeOff } from '@/components/ui/icons';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import PohonOpdCount from './PohonOpdCount';
 import { useConfirm } from '@/components/ui/confirm-dialog';
 import { getCookieValue, getCookieLabel } from '@/lib/cookie';
 import '../treeflex.css';
@@ -58,9 +59,9 @@ export default function PohonOpdClient() {
     }
     try {
       setLoading(true);
-      const res = await fetchApi<PohonOpdResponse>(
-        `/pohon_kinerja_opd/findall/${kodeOpd}/${tahun}`
-      );
+      const res = await fetchApi<PohonOpdResponse>({ type: 'auth',  method: 'GET', 
+        url: `/pohon_kinerja_opd/findall/${kodeOpd}/${tahun}`,
+      });
       setNamaOpd(res.data?.data?.nama_opd || namaOpd);
       setTujuanOpd(res.data?.data?.tujuan_opd ?? []);
       const childs = res.data?.data?.childs ?? [];
@@ -117,7 +118,7 @@ export default function PohonOpdClient() {
     });
     if (!confirmed) return;
     try {
-      await fetchApi(`/pohon_kinerja_admin/delete/${nodeId}`, { method: 'DELETE' });
+      await fetchApi({ type: 'auth',  url: `/pohon_kinerja_admin/delete/${nodeId}`, method: 'DELETE' });
       toast.success('Node berhasil dihapus');
       fetchPohonData();
     } catch (err) {
@@ -158,6 +159,7 @@ export default function PohonOpdClient() {
             ) : (
               <Card className="mt-6">
                 <CardContent>
+                  <PohonOpdCount kodeOpd={kodeOpd} tahun={tahun} />
                   <div ref={scrollContainerRef} className="overflow-x-auto w-full">
                     <div className="tf-tree tf-gap-sm w-fit mx-auto">
                       <ul>

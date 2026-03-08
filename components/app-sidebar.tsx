@@ -48,9 +48,9 @@ type NavItem = {
   title: string;
   icon: LucideIcon;
 } & (
-  | { href: string; children?: never }
-  | { href?: never; children: { title: string; href: string; icon: LucideIcon }[] }
-);
+    | { href: string; children?: never }
+    | { href?: never; children: { title: string; href: string; icon: LucideIcon }[] }
+  );
 
 type NavGroup = {
   label: string;
@@ -82,11 +82,11 @@ const navGroups: NavGroup[] = [
     label: 'Pemda',
     items: [
       {
-        title: 'Pemda',
+        title: 'Perencanaan Pemda',
         icon: Building,
         children: [
-          { title: 'Tematik', href: '/pemda/tematik', icon: DatabaseIcon },
-          { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon', icon: TreePine },
+          { title: 'Tematik', href: '/pemda/tematik-pemda', icon: DatabaseIcon },
+          { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon-kinerja-pemda', icon: TreePine },
         ],
       },
     ],
@@ -95,11 +95,10 @@ const navGroups: NavGroup[] = [
     label: 'OPD',
     items: [
       {
-        title: 'OPD',
+        title: 'Perencanaan OPD',
         icon: Building2,
         children: [
           { title: 'Pohon Kinerja OPD', href: '/opd/pohon', icon: TreeDeciduous },
-          { title: 'Pohon Cascading', href: '/opd/pohon-cascading', icon: TreePine },
         ],
       },
     ],
@@ -216,9 +215,8 @@ export function AppSidebar() {
 
                                     {/* vertical line */}
                                     <div
-                                      className={`absolute left-0 w-px border-l border-sidebar-border/50 ${
-                                        isLast ? 'top-0 h-1/2' : 'top-0 h-full'
-                                      }`}
+                                      className={`absolute left-0 w-px border-l border-sidebar-border/50 ${isLast ? 'top-0 h-1/2' : 'top-0 h-full'
+                                        }`}
                                     />
 
                                     {/* horizontal line */}

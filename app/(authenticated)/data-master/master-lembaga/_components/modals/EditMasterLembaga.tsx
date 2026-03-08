@@ -21,43 +21,45 @@ export default function EditMasterLembaga({
   const [loadingData, setLoadingData] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
- useEffect(() => {
-  const fetchDetail = async () => {
-    setLoadingData(true);
+  useEffect(() => {
+    const fetchDetail = async () => {
+      setLoadingData(true);
 
-    const response = await fetchApi<{
-      code: number;
-      status: string;
-      data: {
-        id: string;
-        nama_lembaga: string;
-        kode_lembaga: string;
-      }[];
-    }>('/lembaga/findall');
+      const response = await fetchApi<{
+        code: number;
+        status: string;
+        data: {
+          id: string;
+          nama_lembaga: string;
+          kode_lembaga: string;
+        }[];
+      }>({ url: '/lembaga/findall', type: 'auth', method: 'GET' });
 
-    const list = response.data?.data ?? [];
+      const list = response.data?.data ?? [];
 
-    const selected = list.find((item) => item.id === idLembaga);
+      const selected = list.find((item) => item.id === idLembaga);
 
-    if (selected) {
-      setNamaLembaga(selected.nama_lembaga ?? '');
-      setKodeLembaga(selected.kode_lembaga ?? '');
-    } else {
-      toast.error('Data lembaga tidak ditemukan');
-    }
+      if (selected) {
+        setNamaLembaga(selected.nama_lembaga ?? '');
+        setKodeLembaga(selected.kode_lembaga ?? '');
+      } else {
+        toast.error('Data lembaga tidak ditemukan');
+      }
 
-    setLoadingData(false);
-  };
+      setLoadingData(false);
+    };
 
-  fetchDetail();
-}, [idLembaga]);
+    fetchDetail();
+  }, [idLembaga]);
 
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const response = await fetchApi(`/lembaga/update/${idLembaga}`, {
+    const response = await fetchApi({
+      type: 'auth',
+      url: `/lembaga/update/${idLembaga}`,
       method: 'PUT',
       body: {
         nama_lembaga: namaLembaga,
