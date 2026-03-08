@@ -59,7 +59,9 @@ export default function PohonOpdClient() {
     }
     try {
       setLoading(true);
-      const res = await fetchApi<PohonOpdResponse>({ type: 'auth',  method: 'GET', 
+      const res = await fetchApi<PohonOpdResponse>({
+        type: 'auth',
+        method: 'GET',
         url: `/pohon_kinerja_opd/findall/${kodeOpd}/${tahun}`,
       });
       setNamaOpd(res.data?.data?.nama_opd || namaOpd);
@@ -118,7 +120,7 @@ export default function PohonOpdClient() {
     });
     if (!confirmed) return;
     try {
-      await fetchApi({ type: 'auth',  url: `/pohon_kinerja_admin/delete/${nodeId}`, method: 'DELETE' });
+      await fetchApi({ type: 'auth', url: `/pohon_kinerja_admin/delete/${nodeId}`, method: 'DELETE' });
       toast.success('Node berhasil dihapus');
       fetchPohonData();
     } catch (err) {
