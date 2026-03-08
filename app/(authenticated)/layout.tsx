@@ -6,7 +6,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import { ConfirmDialogProvider } from '@/components/ui/confirm-dialog';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { getCookie } from 'cookies-next';
 
 export default function AuthenticatedLayout({
   children,

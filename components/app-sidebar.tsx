@@ -16,6 +16,8 @@ import {
   TreeDeciduous,
   ChevronRight,
   Trees,
+  FileText,
+  Target,
 } from 'lucide-react';
 import { getCookie, deleteCookie } from 'cookies-next';
 
@@ -45,62 +47,47 @@ import {
 
 import type { LucideIcon } from 'lucide-react';
 
+type NavLeaf = { title: string; href: string; icon: LucideIcon };
+type NavGroup2 = { title: string; icon: LucideIcon; children: NavLeaf[] };
+
 type NavItem = {
   title: string;
   icon: LucideIcon;
 } & (
     | { href: string; children?: never }
-    | { href?: never; children: { title: string; href: string; icon: LucideIcon }[] }
+    | { href?: never; children: (NavLeaf | NavGroup2)[] }
   );
 
-type NavGroup = {
-  label: string;
-  items: NavItem[];
-};
-
-const navGroups: NavGroup[] = [
+const navItems: NavItem[] = [
+  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   {
-    label: 'Overview',
-    items: [
-      { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    title: 'Data Master',
+    icon: DatabaseIcon,
+    children: [
+      { title: 'Master Lembaga', href: '/data-master/master-lembaga', icon: Building },
+      { title: 'Master OPD', href: '/data-master/master-opd', icon: Building2 },
+      { title: 'Master Role', href: '/data-master/master-role', icon: User },
     ],
   },
   {
-    label: 'Data Master',
-    items: [
-      {
-        title: 'Data Master',
-        icon: DatabaseIcon,
-        children: [
-          { title: 'Master Lembaga', href: '/data-master/master-lembaga', icon: Building },
-          { title: 'Master OPD', href: '/data-master/master-opd', icon: Building2 },
-          { title: 'Master Role', href: '/data-master/master-role', icon: User },
-        ],
-      },
+    title: 'Perencanaan Pemda',
+    icon: Building,
+    children: [
+      { title: 'Tematik', href: '/pemda/tematik-pemda', icon: DatabaseIcon },
+      { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon-kinerja-pemda', icon: TreePine },
     ],
   },
   {
-    label: 'Pemda',
-    items: [
+    title: 'Perencanaan OPD',
+    icon: Building2,
+    children: [
+      { title: 'Pohon Kinerja OPD', href: '/opd/pohon-kinerja-opd', icon: TreeDeciduous },
+      { title: 'Pohon Cascading', href: '/opd/pohon-cascading', icon: Trees },
       {
-        title: 'Perencanaan Pemda',
-        icon: Building,
+        title: 'Renstra',
+        icon: FileText,
         children: [
-          { title: 'Tematik', href: '/pemda/tematik-pemda', icon: DatabaseIcon },
-          { title: 'Pohon Kinerja Pemda', href: '/pemda/pohon-kinerja-pemda', icon: TreePine },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'OPD',
-    items: [
-      {
-        title: 'Perencanaan OPD',
-        icon: Building2,
-        children: [
-          { title: 'Pohon Kinerja OPD', href: '/opd/pohon-kinerja-opd', icon: TreeDeciduous },
-          { title: 'Pohon Cascading', href: '/opd/pohon-cascading', icon: Trees },
+          { title: 'Tujuan OPD', href: '/opd/renstra/tujuan-opd', icon: Target },
         ],
       },
     ],
@@ -170,20 +157,17 @@ export function AppSidebar() {
 
       {/* CONTENT */}
       <SidebarContent>
-        {navGroups.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
 
-            <SidebarGroupContent>
-              <SidebarMenu>
+              {navItems.map((item) => {
 
-                {group.items.map((item) => {
+                if (item.children) {
 
-                  if (item.children) {
-
-                    const isGroupActive = item.children.some(
-                      (child) => pathname === child.href
-                    );
+                  const isGroupActive = item.children.some((child) =>
+                    'href' in child ? pathname === child.href : child.children.some((c) => pathname === c.href)
+                  );
 
                     return (
                       <Collapsible
@@ -209,6 +193,46 @@ export function AppSidebar() {
 
                                 const isLast = index === item.children.length - 1;
 
+                                // NavGroup2: nested collapsible
+                                if ('children' in child) {
+                                  const isSubGroupActive = child.children.some((c) => pathname === c.href);
+                                  return (
+                                    <SidebarMenuSubItem key={child.title} className="relative flex flex-col py-1">
+                                      <div className={`absolute left-0 w-px border-l border-sidebar-border/50 ${isLast ? 'top-0 h-1/2' : 'top-0 h-full'}`} />
+                                      <div className="absolute left-0 top-[18px] h-px w-4 border-t border-sidebar-border/50" />
+                                      <Collapsible defaultOpen={isSubGroupActive} className="group/collapsible2 ml-4 w-full">
+                                        <CollapsibleTrigger asChild>
+                                          <SidebarMenuSubButton className="w-full">
+                                            <child.icon className="size-4" />
+                                            <span>{child.title}</span>
+                                            <ChevronRight className="ml-auto size-3 transition-transform group-data-[state=open]/collapsible2:rotate-90" />
+                                          </SidebarMenuSubButton>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                          <SidebarMenuSub className="ml-4 border-none gap-0 space-y-0 pl-0 py-0">
+                                            {child.children.map((sub, subIndex) => {
+                                              const isSubLast = subIndex === child.children.length - 1;
+                                              return (
+                                                <SidebarMenuSubItem key={sub.href} className="relative flex items-center py-1">
+                                                  <div className={`absolute left-0 w-px border-l border-sidebar-border/50 ${isSubLast ? 'top-0 h-1/2' : 'top-0 h-full'}`} />
+                                                  <div className="absolute left-0 top-1/2 h-px w-4 border-t border-sidebar-border/50" />
+                                                  <SidebarMenuSubButton asChild isActive={pathname === sub.href} className="ml-4">
+                                                    <Link href={sub.href}>
+                                                      <sub.icon className="size-4" />
+                                                      <span>{sub.title}</span>
+                                                    </Link>
+                                                  </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                              );
+                                            })}
+                                          </SidebarMenuSub>
+                                        </CollapsibleContent>
+                                      </Collapsible>
+                                    </SidebarMenuSubItem>
+                                  );
+                                }
+
+                                // NavLeaf: plain link
                                 return (
                                   <SidebarMenuSubItem
                                     key={child.href}
@@ -264,7 +288,6 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        ))}
       </SidebarContent>
 
       {/* FOOTER */}
