@@ -315,7 +315,7 @@ export const AddTujuanOpdModal: React.FC<AddTujuanOpdModalProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white py-3 rounded-lg font-bold transition-all disabled:opacity-50"
+              className="w-full bg-linear-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white py-3 rounded-lg font-bold transition-all disabled:opacity-50"
             >
               {isLoading ? 'Menyimpan...' : 'Simpan'}
             </button>

@@ -35,6 +35,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -97,7 +98,7 @@ const navGroups: NavGroup[] = [
         title: 'Perencanaan OPD',
         icon: Building2,
         children: [
-          { title: 'Pohon Kinerja OPD', href: '/opd/pohon-kinerja-opd', icon: TreeDeciduous },
+          { title: 'Pohon Kinerja OPD', href: '/opd/pohon', icon: TreeDeciduous },
         ],
       },
     ],
@@ -118,8 +119,13 @@ export function AppSidebar() {
   useEffect(() => {
     try {
       const raw = getCookie('user');
-      if (raw) { const rawStr = typeof raw === 'string' ? raw : String(raw); setUser(JSON.parse(rawStr)); }
-    } catch { /* ignore */ }
+      if (raw) {
+        const rawStr = typeof raw === 'string' ? raw : String(raw);
+        setUser(JSON.parse(rawStr));
+      }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const handleLogout = async () => {
@@ -137,6 +143,7 @@ export function AppSidebar() {
         <div className="relative flex w-full items-center justify-end px-2 group-data-[collapsible=icon]:justify-center">
           <SidebarTrigger />
         </div>
+
         <div className="flex flex-col items-center gap-2 pb-4 group-data-[collapsible=icon]:hidden">
           <Image
             src="/icon.png"
@@ -144,10 +151,12 @@ export function AppSidebar() {
             width={64}
             height={64}
           />
+
           <div className="text-center">
             <p className="font-display text-sm font-bold uppercase tracking-wider text-sidebar-foreground">
               Kertas Kerja
             </p>
+
             {user && (
               <p className="text-xs text-sidebar-foreground/60 mt-0.5">
                 {user.roles[0]?.replace('_', ' ')}
@@ -162,13 +171,18 @@ export function AppSidebar() {
         {navGroups.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+
             <SidebarGroupContent>
               <SidebarMenu>
+
                 {group.items.map((item) => {
+
                   if (item.children) {
+
                     const isGroupActive = item.children.some(
                       (child) => pathname === child.href
                     );
+
                     return (
                       <Collapsible
                         key={item.title}
@@ -176,6 +190,7 @@ export function AppSidebar() {
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
+
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton>
                               <item.icon />
@@ -183,22 +198,30 @@ export function AppSidebar() {
                               <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
+
                           <CollapsibleContent>
+
                             <SidebarMenuSub className="ml-4 border-none gap-0 space-y-0 pl-0 py-0">
+
                               {item.children.map((child, index) => {
+
                                 const isLast = index === item.children.length - 1;
+
                                 return (
                                   <SidebarMenuSubItem
                                     key={child.href}
                                     className="relative flex items-center py-1"
                                   >
-                                    {/* Garis vertikal: penuh untuk item biasa, setengah atas untuk item terakhir */}
+
+                                    {/* vertical line */}
                                     <div
                                       className={`absolute left-0 w-px border-l border-sidebar-border/50 ${isLast ? 'top-0 h-1/2' : 'top-0 h-full'
                                         }`}
                                     />
-                                    {/* Garis horizontal */}
+
+                                    {/* horizontal line */}
                                     <div className="absolute left-0 top-1/2 h-px w-4 border-t border-sidebar-border/50" />
+
                                     <SidebarMenuSubButton
                                       asChild
                                       isActive={pathname === child.href}
@@ -209,10 +232,13 @@ export function AppSidebar() {
                                         <span>{child.title}</span>
                                       </Link>
                                     </SidebarMenuSubButton>
+
                                   </SidebarMenuSubItem>
                                 );
                               })}
+
                             </SidebarMenuSub>
+
                           </CollapsibleContent>
                         </SidebarMenuItem>
                       </Collapsible>
@@ -220,6 +246,7 @@ export function AppSidebar() {
                   }
 
                   const isActive = pathname === item.href;
+
                   return (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton asChild isActive={isActive}>
@@ -231,6 +258,7 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                   );
                 })}
+
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -240,14 +268,20 @@ export function AppSidebar() {
       {/* FOOTER */}
       <SidebarFooter>
         <SidebarMenu>
+
           <SidebarMenuItem>
-            <SidebarMenuButton asChild onClick={handleLogout} className="text-background cursor-pointer">
+            <SidebarMenuButton
+              asChild
+              onClick={handleLogout}
+              className="text-background cursor-pointer"
+            >
               <div>
                 <LogOut />
                 <span>Logout</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
         </SidebarMenu>
       </SidebarFooter>
 

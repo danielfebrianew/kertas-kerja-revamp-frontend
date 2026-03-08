@@ -228,7 +228,7 @@ export default function PohonOpdClient() {
 
                                 <button
                                   type="button"
-                                  className="w-full px-3 py-2 flex justify-center items-center whitespace-nowrap bg-gradient-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white rounded-md transition-all shadow-sm"
+                                  className="w-full px-3 py-2 flex justify-center items-center whitespace-nowrap bg-linear-to-r from-[#08C2FF] to-[#006BFF] hover:from-[#0584AD] hover:to-[#014CB2] text-white rounded-md transition-all shadow-sm"
                                 >
                                   <IconCetak />
                                   <span className="font-semibold">Cetak Penuh Pohon Kinerja</span>
