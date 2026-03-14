@@ -18,6 +18,8 @@ import {
   Trees,
   FileText,
   Target,
+  Crosshair,
+  TrendingUp,
 } from 'lucide-react';
 import { getCookie, deleteCookie } from 'cookies-next';
 
@@ -88,6 +90,8 @@ const navItems: NavItem[] = [
         icon: FileText,
         children: [
           { title: 'Tujuan OPD', href: '/opd/renstra/tujuan-opd', icon: Target },
+          { title: 'Sasaran OPD', href: '/opd/renstra/sasaran-opd', icon: Crosshair },
+          { title: 'IKU OPD', href: '/opd/renstra/iku-opd', icon: TrendingUp },
         ],
       },
     ],

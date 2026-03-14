@@ -1,7 +1,8 @@
 'use client';
 
-import { DataGrid, type GridColDef, type GridColumnGroupingModel } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
+import { useState, Fragment } from 'react';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface TujuanOpdRow {
   id: string;
@@ -21,231 +22,176 @@ interface TujuanOpdTableProps {
   onDelete: (id: number) => void;
 }
 
+const PAGE_SIZE_OPTIONS = [5, 10, 25];
+
 export default function TujuanOpdTable({ rows, tahunList, onEdit, onDelete }: TujuanOpdTableProps) {
-  const spanHeader = (label: string) => () => (
-    <div className="col-span-header-inner">{label}</div>
-  );
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
-  const staticColumns: GridColDef<TujuanOpdRow>[] = [
-    {
-      field: 'no',
-      headerName: 'No',
-      width: 55,
-      align: 'center',
-      headerAlign: 'center',
-      sortable: false,
-      disableColumnMenu: true,
-      headerClassName: 'col-span-header',
-      renderHeader: spanHeader('No'),
-      renderCell: (params) => (
-        <div className="h-full w-full flex items-center justify-center">
-          {params.api.getRowIndexRelativeToVisibleRows(params.row.id) + 1}
-        </div>
-      ),
-    },
-    {
-      field: 'urusan_bidang',
-      headerName: 'Urusan & Bidang Urusan',
-      flex: 1.5,
-      minWidth: 220,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'col-span-header',
-      renderHeader: spanHeader('Urusan & Bidang Urusan'),
-      renderCell: (params) => (
-        <div className="h-full w-full flex items-center justify-center whitespace-normal break-words text-center text-xs py-2">
-          {params.row.urusan_bidang}
-        </div>
-      ),
-    },
-    {
-      field: 'tujuan',
-      headerName: 'Tujuan OPD',
-      flex: 1.5,
-      minWidth: 200,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'col-span-header',
-      renderHeader: spanHeader('Tujuan OPD'),
-      renderCell: (params) => (
-        <div className="h-full w-full flex items-center justify-center whitespace-normal break-words text-center text-xs py-2">
-          {params.row.tujuan}
-        </div>
-      ),
-    },
-    {
-      field: 'aksi',
-      headerName: 'Aksi',
-      width: 100,
-      sortable: false,
-      disableColumnMenu: true,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'col-span-header',
-      renderHeader: spanHeader('Aksi'),
-      renderCell: (params) => (
-        <div className="flex flex-col gap-2 justify-center items-center h-full w-full px-2">
-          <button
-            onClick={() => onEdit(params.row.id_tujuan_opd)}
-            className="w-full px-3 py-1.5 flex justify-center items-center bg-[#22c55e] text-white hover:bg-green-600 rounded-md transition-colors text-xs font-medium"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => onDelete(params.row.id_tujuan_opd)}
-            className="w-full px-3 py-1.5 flex justify-center items-center bg-[#e11d48] hover:bg-rose-700 text-white rounded-md transition-colors text-xs font-medium"
-          >
-            Hapus
-          </button>
-        </div>
-      ),
-    },
-    {
-      field: 'indikator',
-      headerName: 'Indikator',
-      flex: 1,
-      minWidth: 180,
-      align: 'center',
-      headerAlign: 'center',
-      sortable: false,
-      headerClassName: 'col-span-header',
-      renderHeader: spanHeader('Indikator'),
-      renderCell: (params) => (
-        <div className="h-full w-full flex items-center justify-center whitespace-normal break-words text-center text-xs py-2">
-          {params.row.indikator || '-'}
-        </div>
-      ),
-    },
-    {
-      field: 'rumus_perhitungan',
-      headerName: 'Rumus Perhitungan',
-      flex: 1.5,
-      minWidth: 200,
-      align: 'center',
-      headerAlign: 'center',
-      sortable: false,
-      headerClassName: 'col-span-header',
-      renderHeader: spanHeader('Rumus Perhitungan'),
-      renderCell: (params) => (
-        <div className="h-full w-full flex items-center justify-center whitespace-normal break-words text-center text-xs py-2">
-          {params.row.rumus_perhitungan || '-'}
-        </div>
-      ),
-    },
-    {
-      field: 'sumber_data',
-      headerName: 'Sumber Data',
-      flex: 0.7,
-      minWidth: 120,
-      align: 'center',
-      headerAlign: 'center',
-      sortable: false,
-      headerClassName: 'col-span-header',
-      renderHeader: spanHeader('Sumber Data'),
-      renderCell: (params) => (
-        <div className="h-full w-full flex items-center justify-center whitespace-normal break-words text-center text-xs py-2">
-          {params.row.sumber_data || '-'}
-        </div>
-      ),
-    },
-  ];
+  const totalPages = Math.ceil(rows.length / pageSize);
+  const paginatedRows = rows.slice(page * pageSize, (page + 1) * pageSize);
 
-  const tahunColumns: GridColDef<TujuanOpdRow>[] = tahunList.flatMap((tahun) => [
-    {
-      field: `target_${tahun}`,
-      headerName: 'Target',
-      width: 100,
-      align: 'center' as const,
-      headerAlign: 'center' as const,
-      sortable: false,
-      renderCell: (params: any) => (
-        <div className="h-full w-full flex items-center justify-center text-center text-xs py-2">
-          {params.row[`target_${tahun}`] || '-'}
-        </div>
-      ),
-    },
-    {
-      field: `satuan_${tahun}`,
-      headerName: 'Satuan',
-      width: 100,
-      align: 'center' as const,
-      headerAlign: 'center' as const,
-      sortable: false,
-      renderCell: (params: any) => (
-        <div className="h-full w-full flex items-center justify-center text-center text-xs py-2">
-          {params.row[`satuan_${tahun}`] || '-'}
-        </div>
-      ),
-    },
-  ]);
+  // Hitung rowSpan per id_tujuan_opd dan per urusan_bidang dalam halaman ini
+  const tujuanSpan = new Map<number, number>();
+  const tujuanFirst = new Map<number, number>();
+  const urusanSpan = new Map<string, number>();
+  const urusanFirst = new Map<string, number>();
 
-  const columnGroupingModel: GridColumnGroupingModel = tahunList.map((tahun) => ({
-    groupId: tahun,
-    headerName: tahun,
-    headerAlign: 'center',
-    children: [
-      { field: `target_${tahun}` },
-      { field: `satuan_${tahun}` },
-    ],
-  }));
+  paginatedRows.forEach((row, i) => {
+    tujuanSpan.set(row.id_tujuan_opd, (tujuanSpan.get(row.id_tujuan_opd) ?? 0) + 1);
+    if (!tujuanFirst.has(row.id_tujuan_opd)) tujuanFirst.set(row.id_tujuan_opd, i);
 
-  const columns = [...staticColumns, ...tahunColumns];
-  const paginationModel = { page: 0, pageSize: 10 };
+    urusanSpan.set(row.urusan_bidang, (urusanSpan.get(row.urusan_bidang) ?? 0) + 1);
+    if (!urusanFirst.has(row.urusan_bidang)) urusanFirst.set(row.urusan_bidang, i);
+  });
+
+  // Nomor urut per tujuan (bukan per baris indikator)
+  const tujuanOrder: number[] = [];
+  const seenTujuan = new Set<number>();
+  paginatedRows.forEach((row) => {
+    if (!seenTujuan.has(row.id_tujuan_opd)) {
+      seenTujuan.add(row.id_tujuan_opd);
+      tujuanOrder.push(row.id_tujuan_opd);
+    }
+  });
+
+  const thClass = 'text-center text-xs font-bold text-primary-foreground bg-primary border-r border-white/20 px-2 py-3 whitespace-normal';
+  const tdClass = 'text-center text-xs border-r border-border px-2 py-2 align-middle whitespace-normal break-words';
 
   return (
-    <Paper sx={{ width: '100%', borderRadius: '0.375rem', overflow: 'hidden' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        columnGroupingModel={columnGroupingModel}
-        initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10, 25]}
-        disableRowSelectionOnClick
-        autoHeight
-        getRowHeight={() => 'auto'}
-        showColumnVerticalBorder
-        showCellVerticalBorder
-        sx={{
-          border: 0,
-          fontSize: '0.8rem',
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: 'var(--primary)',
-            color: 'var(--primary-foreground)',
-          },
-          '& .MuiDataGrid-columnHeader': {
-            backgroundColor: 'var(--primary)',
-          },
-          '& .MuiDataGrid-columnHeaderGroup': {
-            backgroundColor: 'var(--primary)',
-            color: 'var(--primary-foreground)',
-            fontWeight: 700,
-          },
-          '& .MuiDataGrid-columnHeaderTitle': {
-            fontWeight: 700,
-            textTransform: 'capitalize',
-          },
-          '& .MuiDataGrid-iconButtonContainer': {
-            display: 'none',
-          },
-          '& .MuiDataGrid-menuIcon': {
-            visibility: 'visible !important',
-            width: 'auto',
-          },
-          '& .MuiDataGrid-menuIconButton': {
-            color: 'var(--primary-foreground)',
-            transition: 'background-color 0.2s ease',
-            opacity: 1,
-            '&:hover': {
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            },
-          },
-          '& .MuiDataGrid-cell': {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          },
-        }}
-      />
-    </Paper>
+    <div className="rounded-md border overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full caption-bottom text-sm">
+          <thead>
+            <tr className="bg-primary">
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 w-[55px]`}>No</th>
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[220px]`}>Urusan & Bidang Urusan</th>
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[200px]`}>Tujuan OPD</th>
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[180px]`}>Indikator</th>
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[200px]`}>Rumus Perhitungan</th>
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[120px]`}>Sumber Data</th>
+              {tahunList.map((tahun) => (
+                <th key={tahun} colSpan={2} className={`${thClass} border-b border-white/20 text-center`}>
+                  {tahun}
+                </th>
+              ))}
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 w-[100px] border-r-0`}>Aksi</th>
+            </tr>
+            <tr className="bg-primary">
+              {tahunList.map((tahun) => (
+                <Fragment key={tahun}>
+                  <th className={`${thClass} w-[100px]`}>Target</th>
+                  <th className={`${thClass} w-[100px]`}>Satuan</th>
+                </Fragment>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedRows.length === 0 ? (
+              <tr>
+                <td colSpan={7 + tahunList.length * 2} className="text-center py-8 text-muted-foreground text-sm">
+                  Tidak ada data
+                </td>
+              </tr>
+            ) : (
+              paginatedRows.map((row, index) => {
+                const isTujuanFirst = tujuanFirst.get(row.id_tujuan_opd) === index;
+                const isUrusanFirst = urusanFirst.get(row.urusan_bidang) === index;
+                const tujuanRowSpan = tujuanSpan.get(row.id_tujuan_opd) ?? 1;
+                const urusanRowSpan = urusanSpan.get(row.urusan_bidang) ?? 1;
+                const tujuanNo = tujuanOrder.indexOf(row.id_tujuan_opd) + 1 + page * pageSize;
+                return (
+                  <tr key={row.id} className="border-b transition-colors hover:bg-muted/50">
+                    {isTujuanFirst && (
+                      <td className={tdClass} rowSpan={tujuanRowSpan}>{tujuanNo}</td>
+                    )}
+                    {isUrusanFirst && (
+                      <td className={`${tdClass} text-left`} rowSpan={urusanRowSpan}>
+                        {row.urusan_bidang.split('\n').map((line: string, i: number) => (
+                          <Fragment key={i}>
+                            {i > 0 && <hr className="my-1 border-border" />}
+                            <p className="text-xs">{line}</p>
+                          </Fragment>
+                        ))}
+                      </td>
+                    )}
+                    
+                    {isTujuanFirst && (
+                      <td className={tdClass} rowSpan={tujuanRowSpan}>{row.tujuan}</td>
+                    )}
+                    <td className={tdClass}>{row.indikator || '-'}</td>
+                    <td className={tdClass}>{row.rumus_perhitungan || '-'}</td>
+                    <td className={tdClass}>{row.sumber_data || '-'}</td>
+                    {tahunList.map((tahun) => (
+                      <Fragment key={tahun}>
+                        <td className={tdClass}>{(row[`target_${tahun}`] as string) || '-'}</td>
+                        <td className={tdClass}>{(row[`satuan_${tahun}`] as string) || '-'}</td>
+                      </Fragment>
+                    ))}
+                    {isTujuanFirst && (
+                      <td className={`${tdClass} border-r-0`} rowSpan={tujuanRowSpan}>
+                        <div className="flex flex-col gap-2 items-center">
+                          <button
+                            onClick={() => onEdit(row.id_tujuan_opd)}
+                            className="w-full px-3 py-1.5 flex justify-center items-center bg-[#22c55e] text-white hover:bg-green-600 rounded-md transition-colors text-xs font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => onDelete(row.id_tujuan_opd)}
+                            className="w-full px-3 py-1.5 flex justify-center items-center bg-[#e11d48] hover:bg-rose-700 text-white rounded-md transition-colors text-xs font-medium"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-4 py-3 border-t text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <span>Baris per halaman:</span>
+          <select
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(0); }}
+            className="border rounded px-2 py-1 text-sm bg-background text-foreground"
+          >
+            {PAGE_SIZE_OPTIONS.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>
+            {rows.length === 0 ? '0' : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, rows.length)}`} dari {rows.length}
+          </span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            disabled={page >= totalPages - 1}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
