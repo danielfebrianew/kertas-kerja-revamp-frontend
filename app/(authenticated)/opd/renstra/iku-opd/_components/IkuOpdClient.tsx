@@ -57,6 +57,7 @@ function IkuOpdContent() {
   const [rows, setRows] = useState<any[]>([]);
   const [tahunList, setTahunList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'aktif' | 'tidak-aktif'>('aktif');
   const confirm = useConfirm();
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
@@ -203,9 +204,20 @@ function IkuOpdContent() {
               </div>
             ) : (
               <Tabs defaultValue="aktif" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-3">
-                  <TabsTrigger value="aktif">IKU yang aktif</TabsTrigger>
-                  <TabsTrigger value="tidak-aktif">IKU yang tidak aktif</TabsTrigger>
+                <TabsList className="relative grid w-full grid-cols-2 mb-3 overflow-hidden">
+                  {/* animated sliding background */}
+                  <span
+                    className="pointer-events-none absolute top-[3px] bottom-[3px] w-[calc(50%-3px)] rounded-md bg-background shadow-sm transition-transform duration-300 ease-in-out dark:bg-input/30 dark:border dark:border-input"
+                    style={{
+                      transform: activeTab === 'aktif' ? 'translateX(3px)' : 'translateX(calc(100% + 3px))',
+                    }}
+                  />
+                  <TabsTrigger value="aktif" onClick={() => setActiveTab('aktif')} className="z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-transparent">
+                    IKU yang aktif
+                  </TabsTrigger>
+                  <TabsTrigger value="tidak-aktif" onClick={() => setActiveTab('tidak-aktif')} className="z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-transparent">
+                    IKU yang tidak aktif
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="aktif" forceMount className="data-[state=inactive]:hidden">
                   <IkuOpdTable

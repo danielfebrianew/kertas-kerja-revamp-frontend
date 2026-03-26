@@ -45,13 +45,13 @@ export default function TujuanOpdTable({ rows, tahunList, onEdit, onDelete }: Tu
     if (!urusanFirst.has(row.urusan_bidang)) urusanFirst.set(row.urusan_bidang, i);
   });
 
-  // Nomor urut per tujuan (bukan per baris indikator)
-  const tujuanOrder: number[] = [];
-  const seenTujuan = new Set<number>();
+  // Nomor urut per urusan_bidang (No mengikuti urusan bidang)
+  const urusanOrder: string[] = [];
+  const seenUrusan = new Set<string>();
   paginatedRows.forEach((row) => {
-    if (!seenTujuan.has(row.id_tujuan_opd)) {
-      seenTujuan.add(row.id_tujuan_opd);
-      tujuanOrder.push(row.id_tujuan_opd);
+    if (!seenUrusan.has(row.urusan_bidang)) {
+      seenUrusan.add(row.urusan_bidang);
+      urusanOrder.push(row.urusan_bidang);
     }
   });
 
@@ -66,22 +66,22 @@ export default function TujuanOpdTable({ rows, tahunList, onEdit, onDelete }: Tu
             <tr className="bg-primary">
               <th rowSpan={2} className={`${thClass} border-b border-white/20 w-[55px]`}>No</th>
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[220px]`}>Urusan & Bidang Urusan</th>
+              <th rowSpan={2} className={`${thClass} border-b border-white/20 w-[100px]`}>Aksi</th>
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[200px]`}>Tujuan OPD</th>
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[180px]`}>Indikator</th>
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[200px]`}>Rumus Perhitungan</th>
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[120px]`}>Sumber Data</th>
-              {tahunList.map((tahun) => (
-                <th key={tahun} colSpan={2} className={`${thClass} border-b border-white/20 text-center`}>
+              {tahunList.map((tahun, ti) => (
+                <th key={tahun} colSpan={2} className={`${thClass} border-b border-white/20 text-center${ti === tahunList.length - 1 ? ' border-r-0' : ''}`}>
                   {tahun}
                 </th>
               ))}
-              <th rowSpan={2} className={`${thClass} border-b border-white/20 w-[100px] border-r-0`}>Aksi</th>
             </tr>
             <tr className="bg-primary">
-              {tahunList.map((tahun) => (
+              {tahunList.map((tahun, ti) => (
                 <Fragment key={tahun}>
                   <th className={`${thClass} w-[100px]`}>Target</th>
-                  <th className={`${thClass} w-[100px]`}>Satuan</th>
+                  <th className={`${thClass} w-[100px]${ti === tahunList.length - 1 ? ' border-r-0' : ''}`}>Satuan</th>
                 </Fragment>
               ))}
             </tr>
@@ -99,11 +99,11 @@ export default function TujuanOpdTable({ rows, tahunList, onEdit, onDelete }: Tu
                 const isUrusanFirst = urusanFirst.get(row.urusan_bidang) === index;
                 const tujuanRowSpan = tujuanSpan.get(row.id_tujuan_opd) ?? 1;
                 const urusanRowSpan = urusanSpan.get(row.urusan_bidang) ?? 1;
-                const tujuanNo = tujuanOrder.indexOf(row.id_tujuan_opd) + 1 + page * pageSize;
+                const urusanNo = urusanOrder.indexOf(row.urusan_bidang) + 1 + page * pageSize;
                 return (
                   <tr key={row.id} className="border-b transition-colors hover:bg-muted/50">
-                    {isTujuanFirst && (
-                      <td className={tdClass} rowSpan={tujuanRowSpan}>{tujuanNo}</td>
+                    {isUrusanFirst && (
+                      <td className={tdClass} rowSpan={urusanRowSpan}>{urusanNo}</td>
                     )}
                     {isUrusanFirst && (
                       <td className={`${tdClass} text-left`} rowSpan={urusanRowSpan}>
@@ -115,21 +115,8 @@ export default function TujuanOpdTable({ rows, tahunList, onEdit, onDelete }: Tu
                         ))}
                       </td>
                     )}
-                    
                     {isTujuanFirst && (
-                      <td className={tdClass} rowSpan={tujuanRowSpan}>{row.tujuan}</td>
-                    )}
-                    <td className={tdClass}>{row.indikator || '-'}</td>
-                    <td className={tdClass}>{row.rumus_perhitungan || '-'}</td>
-                    <td className={tdClass}>{row.sumber_data || '-'}</td>
-                    {tahunList.map((tahun) => (
-                      <Fragment key={tahun}>
-                        <td className={tdClass}>{(row[`target_${tahun}`] as string) || '-'}</td>
-                        <td className={tdClass}>{(row[`satuan_${tahun}`] as string) || '-'}</td>
-                      </Fragment>
-                    ))}
-                    {isTujuanFirst && (
-                      <td className={`${tdClass} border-r-0`} rowSpan={tujuanRowSpan}>
+                      <td className={tdClass} rowSpan={tujuanRowSpan}>
                         <div className="flex flex-col gap-2 items-center">
                           <button
                             onClick={() => onEdit(row.id_tujuan_opd)}
@@ -146,6 +133,18 @@ export default function TujuanOpdTable({ rows, tahunList, onEdit, onDelete }: Tu
                         </div>
                       </td>
                     )}
+                    {isTujuanFirst && (
+                      <td className={tdClass} rowSpan={tujuanRowSpan}>{row.tujuan}</td>
+                    )}
+                    <td className={tdClass}>{row.indikator || '-'}</td>
+                    <td className={tdClass}>{row.rumus_perhitungan || '-'}</td>
+                    <td className={tdClass}>{row.sumber_data || '-'}</td>
+                    {tahunList.map((tahun, ti) => (
+                      <Fragment key={tahun}>
+                        <td className={tdClass}>{(row[`target_${tahun}`] as string) || '-'}</td>
+                        <td className={`${tdClass}${ti === tahunList.length - 1 ? ' border-r-0' : ''}`}>{(row[`satuan_${tahun}`] as string) || '-'}</td>
+                      </Fragment>
+                    ))}
                   </tr>
                 );
               })

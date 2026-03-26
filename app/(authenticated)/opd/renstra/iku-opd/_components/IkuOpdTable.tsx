@@ -44,18 +44,18 @@ export default function IkuOpdTable({ rows, tahunList, onToggleActive }: IkuOpdT
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[200px]`}>Indikator Utama</th>
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[200px]`}>Rumus Perhitungan</th>
               <th rowSpan={2} className={`${thClass} border-b border-white/20 min-w-[120px]`}>Sumber Data</th>
-              {tahunList.map((tahun) => (
-                <th key={tahun} colSpan={2} className={`${thClass} border-b border-white/20 text-center border-r-0`}>
+              {tahunList.map((tahun, ti) => (
+                <th key={tahun} colSpan={2} className={`${thClass} border-b border-white/20 text-center${ti === tahunList.length - 1 ? ' border-r-0' : ''}`}>
                   {tahun}
                 </th>
               ))}
             </tr>
             {/* Baris 2: Target & Satuan per tahun */}
             <tr className="bg-primary">
-              {tahunList.map((tahun, i) => (
+              {tahunList.map((tahun, ti) => (
                 <Fragment key={tahun}>
-                  <th className={`${thClass} w-[100px] border-r-0`}>Target</th>
-                  <th className={`${thClass} w-[100px] ${i < tahunList.length - 1 ? 'border-r border-white/40' : 'border-r-0'}`}>Satuan</th>
+                  <th className={`${thClass} w-[100px]`}>Target</th>
+                  <th className={`${thClass} w-[100px]${ti === tahunList.length - 1 ? ' border-r-0' : ''}`}>Satuan</th>
                 </Fragment>
               ))}
             </tr>
