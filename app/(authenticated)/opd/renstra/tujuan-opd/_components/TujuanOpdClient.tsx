@@ -8,6 +8,7 @@ import { Loader2, Building2, Plus } from 'lucide-react';
 import { getCookieValue, getCookieLabel } from '@/lib/cookie';
 import { toast } from 'sonner';
 import TujuanOpdTable from './TujuanOpdTable';
+import { TujuanOpdEditModal } from './TujuanOpdEditModal';
 
 interface Periode {
   id: number;
@@ -74,6 +75,7 @@ function TujuanOpdContent() {
   const [rows, setRows] = useState<any[]>([]);
   const [tahunList, setTahunList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchApi<{ data: Periode[] }>({ type: 'auth', method: 'GET', url: '/periode/findall' })
@@ -191,13 +193,41 @@ function TujuanOpdContent() {
               <TujuanOpdTable
                 rows={rows}
                 tahunList={tahunList}
-                onEdit={(id) => console.log('edit', id)}
+                onEdit={(id) => setEditId(id)}
                 onDelete={(id) => console.log('delete', id)}
               />
             )}
           </>
         )}
       </div>
+
+      {editId !== null && kodeOpd && (
+        <TujuanOpdEditModal
+          idTujuanOpd={editId}
+          kodeOpd={kodeOpd}
+          onCancel={() => setEditId(null)}
+          onSuccess={() => {
+            setEditId(null);
+            // reload data
+            if (kodeOpd && selectedPeriode) {
+              const { tahun_awal, tahun_akhir, jenis_periode } = selectedPeriode;
+              setLoading(true);
+              fetchApi({
+                type: 'auth',
+                method: 'GET',
+                url: `/tujuan_opd/findall/${kodeOpd}/tahunawal/${tahun_awal}/tahunakhir/${tahun_akhir}/jenisperiode/${jenis_periode}`,
+              })
+                .then((res: any) => {
+                  const { rows: flatRows, tahunList: years } = flattenRows(res.data?.data ?? []);
+                  setRows(flatRows);
+                  setTahunList(years);
+                })
+                .catch(() => toast.error('Gagal memuat data tujuan OPD'))
+                .finally(() => setLoading(false));
+            }
+          }}
+        />
+      )}
     </>
   );
 }
