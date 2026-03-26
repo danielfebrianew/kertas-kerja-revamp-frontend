@@ -1,3 +1,5 @@
+// components/ui/icons/IconEyeOff.tsx
+
 export const IconEyeOff = () => (
   <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
     <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />

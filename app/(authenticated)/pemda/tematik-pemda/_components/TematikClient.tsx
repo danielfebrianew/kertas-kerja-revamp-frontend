@@ -1,3 +1,5 @@
+// app/(authenticated)/pemda/tematik-pemda/_components/TematikClient.tsx
+
 'use client';
 
 import { Suspense, useRef, useState, useEffect } from 'react';

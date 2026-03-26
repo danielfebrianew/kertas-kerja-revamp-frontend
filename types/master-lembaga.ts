@@ -1,3 +1,5 @@
+// types/master-lembaga.ts
+
 export interface MasterLembagaItem {
   id?: number;
   id_lembaga: string;

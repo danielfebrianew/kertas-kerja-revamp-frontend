@@ -1,3 +1,5 @@
+// lib/jwt.ts
+
 export interface JwtPayload {
   email: string;
   exp: number;

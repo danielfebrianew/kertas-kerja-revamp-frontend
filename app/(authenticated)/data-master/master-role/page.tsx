@@ -1,3 +1,5 @@
+// app/(authenticated)/data-master/master-role/page.tsx
+
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import MasterRoleClient from './_components/MasterRoleClient';

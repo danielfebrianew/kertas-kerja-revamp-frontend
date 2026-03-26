@@ -1,3 +1,5 @@
+// lib/fetcher.ts
+
 import { getCookie } from "cookies-next";
 import { getSession } from "next-auth/react";
 import { getServerSession } from "next-auth";

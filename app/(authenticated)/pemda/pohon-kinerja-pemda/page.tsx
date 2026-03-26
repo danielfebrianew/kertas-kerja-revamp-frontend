@@ -1,3 +1,5 @@
+// app/(authenticated)/pemda/pohon-kinerja-pemda/page.tsx
+
 import { Suspense } from 'react';
 import { cookies } from 'next/headers';
 import { Loader2 } from 'lucide-react';

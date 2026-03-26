@@ -1,3 +1,5 @@
+// app/(authenticated)/opd/pohon-kinerja-opd/_components/PohonOpdClient.tsx
+
 'use client';
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
@@ -161,7 +163,7 @@ export default function PohonOpdClient() {
             ) : (
               <Card className="mt-6">
                 <CardContent>
-                  <PohonOpdCount kodeOpd={kodeOpd} tahun={tahun} />
+                  <PohonOpdCount kodeOpd={kodeOpd} tahun={tahun} namaOpd={namaOpd} />
                   <div ref={scrollContainerRef} className="overflow-x-auto w-full">
                     <div className="tf-tree tf-gap-sm w-fit mx-auto">
                       <ul>

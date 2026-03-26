@@ -1,3 +1,5 @@
+// components/ui/icons/index.ts
+
 export { IconAdd } from './IconAdd';
 export { IconCetak } from './IconCetak';
 export { IconDelete } from './IconDelete';

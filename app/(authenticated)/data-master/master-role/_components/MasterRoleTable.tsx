@@ -1,3 +1,5 @@
+// app/(authenticated)/data-master/master-role/_components/MasterRoleTable.tsx
+
 'use client';
 
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';

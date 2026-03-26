@@ -1,9 +1,12 @@
+// app/(authenticated)/opd/pohon-kinerja-opd/_components/PohonOpdCount.tsx
+
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchApi } from '@/lib/fetcher';
-import { Settings } from 'lucide-react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import { CrosscuttingEditModal } from './modals/CrosscuttingEditModal';
+import { CrosscuttingCard } from './CrosscuttingCard';
 
 interface DetailLevel {
   level: number;
@@ -54,6 +57,7 @@ function getLevelColor(jenisPohon: string) {
 interface PohonOpdCountProps {
   kodeOpd: string;
   tahun: string;
+  namaOpd: string;
 }
 
 function CheckIcon({ size = 14 }: { size?: number }) {
@@ -95,10 +99,11 @@ function HourglassIcon({ size = 14 }: { size?: number }) {
   );
 }
 
-export default function PohonOpdCount({ kodeOpd, tahun }: PohonOpdCountProps) {
+export default function PohonOpdCount({ kodeOpd, tahun, namaOpd }: PohonOpdCountProps) {
   const [detailLevel, setDetailLevel] = useState<DetailLevel[]>([]);
   const [crosscutting, setCrosscutting] = useState({ ditolak: 0, pending: 0 });
   const [showModal, setShowModal] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const fetchedRef = useRef<string | null>(null);
   const fetchKey = `${kodeOpd}/${tahun}`;
 
@@ -127,68 +132,68 @@ export default function PohonOpdCount({ kodeOpd, tahun }: PohonOpdCountProps) {
 
   return (
     <>
-      <div className="flex flex-wrap justify-between gap-2 transition-all duration-300 ease-in-out max-h-screen opacity-100">
-        {/* Left Card - Pohon OPD Count */}
-        <div className="flex flex-col justify-between border-2 max-w-[400px] min-w-[300px] px-3 py-2 rounded-xl">
-          <h1 className="font-semibold border-b-2 py-1 text-center">Pohon OPD</h1>
-          <div className="flex flex-col py-2 mt-1 justify-between">
-            <table>
-              <tbody className="flex flex-col gap-2">
-                {detailLevel.map((item) => {
-                  const color = getLevelColor(item.jenis_pohon);
-                  return (
-                    <tr
-                      key={item.level}
-                      className={`flex items-center border ${color.row} cursor-pointer rounded-lg px-2`}
-                    >
-                      <td className="px-2 py-1 text-start min-w-[130px]">
-                        <button type="button" className="font-semibold">{item.jenis_pohon}</button>
-                      </td>
-                      <td className="py-1">
-                        <h1 className="font-semibold">:</h1>
-                      </td>
-                      <td className="flex justify-center px-2 py-1 text-center w-full items-center gap-1">
-                        {item.jumlah_pemda} <HourglassIcon size={14} />
-                      </td>
-                      <td className="py-1">/</td>
-                      <td className="flex justify-center px-2 py-1 text-center w-full items-center gap-1">
-                        {item.jumlah_pemda} <CheckIcon size={14} />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Right Card - Crosscutting Pending */}
-        <div className="flex flex-col justify-between border-2 max-w-[400px] min-w-[300px] px-3 py-2 rounded-xl">
-          <h1 className="font-semibold border-b-2 py-1 text-center">Crosscutting Pending</h1>
-          <div className="flex flex-col py-2 mt-1">
-            <table>
-              <tbody>
-                <tr>
-                  <td className="px-2 py-1 text-start min-w-[130px]">Ditolak</td>
-                  <td className="py-1">:</td>
-                  <td className="px-2 py-1 text-center w-full">{crosscutting.ditolak}</td>
-                </tr>
-                <tr>
-                  <td className="px-2 py-1 text-start min-w-[130px]">Pending</td>
-                  <td className="py-1">:</td>
-                  <td className="px-2 py-1 text-center w-full">{crosscutting.pending}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div className="mb-6">
+        {/* Header row */}
+        <div className="flex items-center justify-between border-b pb-2 mb-4">
+          <h2 className="font-semibold text-base">Pohon Kinerja {namaOpd}</h2>
           <button
             type="button"
-            onClick={() => setShowModal(true)}
-            className="px-3 flex justify-center items-center py-1 bg-gradient-to-r from-[#3072D6] to-[#3072D6] hover:bg-[#3072D6] text-[#3072D6] border-2 border-[#3072D6] hover:text-white rounded-lg w-full"
+            onClick={() => setCollapsed((prev) => !prev)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-border hover:bg-muted transition-colors"
           >
-            <Settings className="mr-1" size={16} />
-            Edit
+            {collapsed ? <ChevronDown size={15} /> : <ChevronUp size={15} />}
+            {collapsed ? 'Tampilkan' : 'Sembunyikan'}
           </button>
+        </div>
+
+        {/* Collapsible body */}
+        <div
+          className={`grid transition-all duration-300 ease-in-out ${collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'}`}
+        >
+          <div className="overflow-hidden">
+            <div className="flex flex-wrap justify-between gap-2">
+              {/* Left Card - Pohon OPD Count */}
+              <div className="flex flex-col justify-between border-2 max-w-[400px] min-w-[300px] px-3 py-2 rounded-xl">
+                <h1 className="font-semibold border-b-2 py-1 text-center">Pohon OPD</h1>
+                <div className="flex flex-col py-2 mt-1 justify-between">
+                  <table>
+                    <tbody className="flex flex-col gap-2">
+                      {detailLevel.map((item) => {
+                        const color = getLevelColor(item.jenis_pohon);
+                        return (
+                          <tr
+                            key={item.level}
+                            className={`flex items-center border ${color.row} cursor-pointer rounded-lg px-2`}
+                          >
+                            <td className="px-2 py-1 text-start min-w-[130px]">
+                              <button type="button" className="font-semibold">{item.jenis_pohon}</button>
+                            </td>
+                            <td className="py-1">
+                              <h1 className="font-semibold">:</h1>
+                            </td>
+                            <td className="flex justify-center px-2 py-1 text-center w-full items-center gap-1">
+                              {item.jumlah_pemda} <HourglassIcon size={14} />
+                            </td>
+                            <td className="py-1">/</td>
+                            <td className="flex justify-center px-2 py-1 text-center w-full items-center gap-1">
+                              {item.jumlah_pemda} <CheckIcon size={14} />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Right Card - Crosscutting Pending */}
+              <CrosscuttingCard
+                ditolak={crosscutting.ditolak}
+                pending={crosscutting.pending}
+                onEditClick={() => setShowModal(true)}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

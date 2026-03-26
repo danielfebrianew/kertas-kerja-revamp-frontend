@@ -1,3 +1,5 @@
+// types/master-role.ts
+
 export interface MasterRoleItem {
   id: number;
   role: string;

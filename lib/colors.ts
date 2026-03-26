@@ -1,3 +1,5 @@
+// lib/colors.ts
+
 /**
  * ============================================================
  * BRAND COLOR CONFIGURATION — Single Source of Truth

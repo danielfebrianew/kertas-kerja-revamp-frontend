@@ -1,3 +1,5 @@
+// types/tematik.ts
+
 import type { PohonIndikator } from './PohonPemda';
 
 export interface TematikPemdaItem {
