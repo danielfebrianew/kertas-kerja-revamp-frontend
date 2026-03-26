@@ -1,3 +1,5 @@
+// app/(authenticated)/data-master/master-role/_components/MasterRoleClient.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';

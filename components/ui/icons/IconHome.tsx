@@ -1,3 +1,5 @@
+// components/ui/icons/IconHome.tsx
+
 export const IconHome = () => (
   <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg">
     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />

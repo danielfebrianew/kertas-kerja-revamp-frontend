@@ -1,3 +1,5 @@
+// app/(authenticated)/opd/pohon-kinerja-opd/_components/modals/CrosscuttingEditModal.tsx
+
 'use client';
 
 interface CrosscuttingEditModalProps {
@@ -40,3 +42,4 @@ export function CrosscuttingEditModal({ onClose }: CrosscuttingEditModalProps) {
     </div>
   );
 }
+

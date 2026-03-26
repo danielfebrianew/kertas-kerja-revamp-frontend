@@ -1,3 +1,5 @@
+// types/PohonOpd.ts
+
 import type { PohonKinerja } from './PohonPemda';
 
 // === OPD Tujuan Types ===

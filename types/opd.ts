@@ -1,3 +1,5 @@
+// types/opd.ts
+
 export interface Lembaga {
   id: string;
   kode_lembaga: string;

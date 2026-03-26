@@ -1,3 +1,5 @@
+// app/(authenticated)/pemda/tematik-pemda/_components/TematikTable.tsx
+
 'use client';
 
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';

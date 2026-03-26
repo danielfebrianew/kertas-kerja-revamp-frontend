@@ -1,3 +1,5 @@
+// app/(authenticated)/data-master/master-lembaga/_components/MasterLembagaClient.tsx
+
 'use client';
 
 import { useEffect, useRef, useState } from 'react';

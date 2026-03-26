@@ -1,3 +1,5 @@
+// app/(authenticated)/data-master/master-lembaga/_components/MasterLembagaTable.tsx
+
 'use client';
 
 import Paper from '@mui/material/Paper';

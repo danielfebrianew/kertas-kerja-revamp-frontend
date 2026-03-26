@@ -1,3 +1,5 @@
+// app/layout.tsx
+
 import type { Metadata } from "next";
 import { Playfair_Display, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { brandCSSVars } from "@/lib/colors";
