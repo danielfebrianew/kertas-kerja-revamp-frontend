@@ -10,8 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-./claude
-
 # testing
 /coverage
 
@@ -42,6 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# ts error logs
+ts_errors*.txt
+ts_out*.txt
 
-#claude
+# claude & ai tools
+/claude/
 .claude
